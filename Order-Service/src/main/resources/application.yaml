@@ -1,8 +1,8 @@
 spring:
   application:
-    name: order
+    name: order-service
   datasource:
-    url: jdbc:h2:mem:sightingdb
+    url: jdbc:h2:mem:orderdb
     driver-class-name: org.h2.Driver
     username: sa
     password:

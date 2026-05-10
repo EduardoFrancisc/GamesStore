@@ -14,6 +14,6 @@ public record OrderResponse(
         LocalDateTime orderDate,
         OrderStatus orderStatus,
         BigDecimal totalAmount,
-        List<OrderItem> Items
+        List<OrderItem> items
 ) {
 }

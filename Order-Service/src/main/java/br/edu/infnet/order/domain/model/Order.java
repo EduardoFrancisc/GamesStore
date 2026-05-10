@@ -25,7 +25,7 @@ public class Order {
     private OrderStatus orderStatus;
     @Column(nullable = false)
     private BigDecimal totalAmount;
-    @OneToMany
-    @Column(nullable = false)
-    private List<OrderItem> Items;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id") // chave estrangeira na tabela order_items
+    private List<OrderItem> items;
 }
