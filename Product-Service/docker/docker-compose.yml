@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  elasticsearch-v2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.8
+    container_name: elasticsearch-marketplace-v2
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9201:9200"

@@ -12,7 +12,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false)
-    private UUID productId;
+    private String productId;
     @Column(nullable = false)
     private Integer quantity;
     @Column(nullable = false)

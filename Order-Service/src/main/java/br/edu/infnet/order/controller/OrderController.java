@@ -3,6 +3,7 @@ package br.edu.infnet.order.controller;
 import br.edu.infnet.order.dto.CreateOrderRequest;
 import br.edu.infnet.order.dto.OrderResponse;
 import br.edu.infnet.order.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponse create(@RequestBody CreateOrderRequest request){
+    public OrderResponse create(@Valid @RequestBody CreateOrderRequest request){
         return  orderService.create(request);
     }
 
