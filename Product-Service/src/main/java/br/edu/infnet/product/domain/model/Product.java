@@ -1,7 +1,6 @@
 package br.edu.infnet.product.domain.model;
 
 import br.edu.infnet.product.domain.enums.Platform;
-import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import lombok.Data;
@@ -32,6 +31,5 @@ public class Product {
     @Field(type = FieldType.Integer)
     private Integer stockQuantity;
 
-    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
     private LocalDateTime releaseDate;
 }
