@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public record CreateProductRequest(
         @NotBlank(message = "O nome do produto é obrigatório")
         @Size(min = 2, max = 150, message = "O nome deve ter entre 2 e 150 caracteres")
-        String name,
+        String title,
 
         @NotBlank(message = "A descrição é obrigatória")
         @Size(max = 2000, message = "A descrição não pode exceder 2000 caracteres")

@@ -20,7 +20,7 @@ public class ProductService {
     public ProductResponse create(CreateProductRequest request) {
         // Converte DTO -> Entity
         Product product = new Product();
-        product.setTitle(request.name()); // Mapeando 'name' do DTO para 'title' da Entity
+        product.setTitle(request.title()); // Mapeando 'name' do DTO para 'title' da Entity
         product.setDescription(request.description());
         product.setPrice(request.price());
         product.setPlatform(request.platform());

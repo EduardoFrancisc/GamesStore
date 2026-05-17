@@ -1,3 +1,7 @@
 spring:
   application:
     name: product
+  elasticsearch:
+    uris: http://localhost:9201
+server:
+  port: 8082

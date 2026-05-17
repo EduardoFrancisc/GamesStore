@@ -5,6 +5,9 @@ import br.edu.infnet.order.domain.model.Order;
 import br.edu.infnet.order.domain.model.OrderItem;
 import br.edu.infnet.order.dto.CreateOrderRequest;
 import br.edu.infnet.order.dto.OrderResponse;
+import br.edu.infnet.order.handler.GlobalExceptionHandler;
+import br.edu.infnet.order.integration.product.client.ProductClient;
+import br.edu.infnet.order.integration.product.dto.ProductResponse;
 import br.edu.infnet.order.repository.OrderRepository;
 import br.edu.infnet.order.exception.OrderNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -17,31 +20,32 @@ import java.util.UUID;
 
 @Service
 public class OrderService {
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final ProductClient  productClient;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(
+            OrderRepository orderRepository,
+            ProductClient productClient) {
         this.orderRepository = orderRepository;
+        this.productClient = productClient;
     }
 
     public OrderResponse create(CreateOrderRequest request) {
         ModelMapper modelMapper = new ModelMapper();
         Order order = modelMapper.map(request, Order.class);
-
         order.setOrderDate(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.PENDING);
 
-        // No futuro, chamar o Product-Service via RestClient
         BigDecimal total = BigDecimal.ZERO;
         if (order.getItems() != null) {
             for (OrderItem item : order.getItems()) {
-                item.setUnitPrice(100.0); // Preço provisório até integrar com o Product-Service
-                BigDecimal itemTotal = BigDecimal.valueOf(item.getUnitPrice())
-                        .multiply(BigDecimal.valueOf(item.getQuantity()));
+                ProductResponse product = productClient.getProductById(item.getProductId());
+                item.setUnitPrice(product.price());
+                BigDecimal itemTotal = BigDecimal.valueOf(item.getUnitPrice()).multiply(BigDecimal.valueOf(item.getQuantity()));
                 total = total.add(itemTotal);
             }
         }
         order.setTotalAmount(total); // Valor total do pedido
-
         Order save = orderRepository.save(order);
         return toResponse(save);
     }

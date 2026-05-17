@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record ProductResponse(
         String id,
-        String name,
+        String title,
         String description,
         Double price,
         Platform platform, // Mudou aqui
