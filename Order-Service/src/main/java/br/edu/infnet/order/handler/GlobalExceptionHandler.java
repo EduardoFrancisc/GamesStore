@@ -1,7 +1,7 @@
 package br.edu.infnet.order.handler;
 
 import br.edu.infnet.order.exception.OrderNotFoundException;
-import br.edu.infnet.order.exception.ProductNotFoundException;
+import br.edu.infnet.order.integration.product.exception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY) // Status 422 é ideal aqui, pois a entidade (pedido) não pode ser processada devido a um erro de semântica.
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public Map<String, Object> handleProductNotFoundException(ProductNotFoundException ex) {
         return Map.of(
                 "timestamp", LocalDateTime.now(),

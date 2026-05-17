@@ -10,12 +10,14 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9201:9200"
-  # NOVO: Container Semeador de Dados
+  # Container Semeador em um profile
   elasticsearch-seeder:
-    image: curlimages/curl:8.4.0 # Uma imagem super leve que só serve para rodar requisições web
+    image: curlimages/curl:8.4.0
     container_name: elasticsearch-seeder
+    profiles: ["seed"]
     depends_on:
-      - elasticsearch-v2 # Garante que só vai ligar depois do banco
+      - elasticsearch-v2
     volumes:
-      - ./init-data.sh:/init-data.sh # Joga o script para dentro do container
-    command: ["/bin/sh", "/init-data.sh"] # Manda o container rodar o script
+      - ./init-data.sh:/init-data.sh
+    command: ["/bin/sh", "/init-data.sh"]
+

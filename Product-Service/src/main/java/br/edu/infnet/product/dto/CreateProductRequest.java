@@ -2,6 +2,8 @@ package br.edu.infnet.product.dto;
 
 import br.edu.infnet.product.domain.enums.Platform;
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record CreateProductRequest(
@@ -14,8 +16,8 @@ public record CreateProductRequest(
         String description,
 
         @NotNull(message = "O preço é obrigatório")
-        @DecimalMin(value = "0.0", inclusive = false, message = "O preço deve ser maior que zero")
-        Double price,
+        @Min(value = 0, message = "O preço não pode ser negativo")
+        BigDecimal price,
 
         @NotNull(message = "A plataforma é obrigatória")
         Platform platform,

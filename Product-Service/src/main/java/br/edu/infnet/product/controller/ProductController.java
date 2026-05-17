@@ -2,6 +2,7 @@ package br.edu.infnet.product.controller;
 
 import br.edu.infnet.product.dto.CreateProductRequest;
 import br.edu.infnet.product.dto.ProductResponse;
+import br.edu.infnet.product.integration.order.OrderItemDTO;
 import br.edu.infnet.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -33,4 +34,11 @@ public class ProductController {
     public ProductResponse findById(@PathVariable String id) {
         return productService.findById(id);
     }
+
+    @PatchMapping("/update-stock")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void reduceProductQuantityStock(@Valid @RequestBody List<OrderItemDTO> items) {
+        productService.reduceProductQuantityStockBatch(items);
+    }
+
 }

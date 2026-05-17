@@ -14,8 +14,8 @@ public class CreateOrderRequest {
     @Size(max = 100, message = "O nome do cliente não pode ser tão grande.")
     String customerName;
     @NotEmpty(message = "O pedido deve conter pelo menos um item.")
-    @Valid //valida os campos de OrderItemRequest
-    List<OrderItemRequest> items;
+    @Valid
+    List<OrderItemDTO> items;
 }
 
 

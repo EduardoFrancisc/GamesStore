@@ -1,10 +1,13 @@
 package br.edu.infnet.order.integration.product.client;
 
-import br.edu.infnet.order.exception.ProductNotFoundException;
+import br.edu.infnet.order.dto.OrderItemDTO;
+import br.edu.infnet.order.integration.product.exception.ProductNotFoundException;
 import br.edu.infnet.order.integration.product.dto.ProductResponse;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import java.util.List;
 
 @Component
 public class ProductClient {
@@ -23,7 +26,11 @@ public class ProductClient {
                 })
                 .body(ProductResponse.class);
     }
-
-
-
+    public void reduceProductQuantityStock(List<OrderItemDTO> orderItemDTOs) {
+        ProductRestClient.patch()
+                .uri("/products/update-stock")
+                .body(orderItemDTOs)
+                .retrieve()
+                .toBodilessEntity(); //ignora o corpo que vem da resposta
+    }
 }

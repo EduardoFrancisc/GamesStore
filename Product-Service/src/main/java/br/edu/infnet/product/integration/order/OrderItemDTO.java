@@ -1,11 +1,10 @@
-package br.edu.infnet.order.dto;
+package br.edu.infnet.product.integration.order;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
-public record OrderItemRequest(
+public record OrderItemDTO(
         @NotBlank(message = "O ID do produto é obrigatório")
         String productId,
         @NotNull(message = "A quantidade é obrigatória")

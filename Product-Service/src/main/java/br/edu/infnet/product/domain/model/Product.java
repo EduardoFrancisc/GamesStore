@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,7 +24,7 @@ public class Product {
     private String description;
 
     @Field(type = FieldType.Double)
-    private Double price;
+    private BigDecimal price;
 
     @Field(type = FieldType.Keyword) //Keyword para buscas exatas no Elasticsearch
     private Platform platform;

@@ -4,17 +4,17 @@ import br.edu.infnet.order.domain.enums.OrderStatus;
 import br.edu.infnet.order.domain.model.Order;
 import br.edu.infnet.order.domain.model.OrderItem;
 import br.edu.infnet.order.dto.CreateOrderRequest;
+import br.edu.infnet.order.dto.OrderItemDTO;
 import br.edu.infnet.order.dto.OrderResponse;
-import br.edu.infnet.order.handler.GlobalExceptionHandler;
 import br.edu.infnet.order.integration.product.client.ProductClient;
 import br.edu.infnet.order.integration.product.dto.ProductResponse;
 import br.edu.infnet.order.repository.OrderRepository;
 import br.edu.infnet.order.exception.OrderNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,23 +31,38 @@ public class OrderService {
     }
 
     public OrderResponse create(CreateOrderRequest request) {
-        ModelMapper modelMapper = new ModelMapper();
-        Order order = modelMapper.map(request, Order.class);
-        order.setOrderDate(LocalDateTime.now());
-        order.setOrderStatus(OrderStatus.PENDING);
+        Order o = new Order();
+        o.setCustomerName(request.getCustomerName());
 
+        List<OrderItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
-        if (order.getItems() != null) {
-            for (OrderItem item : order.getItems()) {
-                ProductResponse product = productClient.getProductById(item.getProductId());
-                item.setUnitPrice(product.price());
-                BigDecimal itemTotal = BigDecimal.valueOf(item.getUnitPrice()).multiply(BigDecimal.valueOf(item.getQuantity()));
-                total = total.add(itemTotal);
-            }
+
+        for (OrderItemDTO item : request.getItems()) {
+            ProductResponse p = productClient.getProductById(item.productId());
+
+            OrderItem oi = new OrderItem();
+            oi.setProductId(p.id());
+            oi.setQuantity(item.quantity());
+            oi.setUnitPrice(p.price());
+            items.add(oi);
+
+            total = total.add(
+                    BigDecimal.valueOf(oi.getQuantity())
+                            .multiply(oi.getUnitPrice())
+            );
         }
-        order.setTotalAmount(total); // Valor total do pedido
-        Order save = orderRepository.save(order);
-        return toResponse(save);
+
+        o.setItems(items);
+        o.setOrderDate(LocalDateTime.now());
+        o.setOrderStatus(OrderStatus.PENDING);
+        o.setTotalAmount(total);
+
+        //Retira os itens do stock
+        productClient.reduceProductQuantityStock(request.getItems());
+
+        orderRepository.save(o);
+
+        return toResponse(o);
     }
 
     public OrderResponse findById(UUID id) {

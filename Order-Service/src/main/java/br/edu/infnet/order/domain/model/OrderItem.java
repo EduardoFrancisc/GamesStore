@@ -2,6 +2,8 @@ package br.edu.infnet.order.domain.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -10,11 +12,11 @@ import java.util.UUID;
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
     @Column(nullable = false)
     private String productId;
     @Column(nullable = false)
     private Integer quantity;
     @Column(nullable = false)
-    private Double unitPrice;
+    private BigDecimal unitPrice;
 }
