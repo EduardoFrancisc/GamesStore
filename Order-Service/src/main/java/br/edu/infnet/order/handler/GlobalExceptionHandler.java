@@ -3,10 +3,12 @@ package br.edu.infnet.order.handler;
 import br.edu.infnet.order.exception.OrderNotFoundException;
 import br.edu.infnet.order.integration.product.exception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -42,6 +44,14 @@ public class GlobalExceptionHandler {
                 "timestamp", LocalDateTime.now(),
                 "status", 422,
                 "error", "Unprocessable Entity",
+                "message", ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
+    public Map<String, Object> handleHttpClientError(HttpClientErrorException ex) {
+        return Map.of(
                 "message", ex.getMessage()
         );
     }

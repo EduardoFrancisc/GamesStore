@@ -1,6 +1,6 @@
 spring:
   application:
-    name: product
+    name: product-service
   elasticsearch:
     uris: http://localhost:9201
 server:

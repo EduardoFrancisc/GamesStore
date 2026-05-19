@@ -31,6 +31,6 @@ public class ProductClient {
                 .uri("/products/update-stock")
                 .body(orderItemDTOs)
                 .retrieve()
-                .toBodilessEntity(); //ignora o corpo que vem da resposta
+                .body(OrderItemDTO.class);
     }
 }
