@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.net.http.HttpTimeoutException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -55,4 +56,13 @@ public class GlobalExceptionHandler {
                 "message", ex.getMessage()
         );
     }
+
+    @ExceptionHandler(HttpTimeoutException.class)
+    @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
+    public Map<String, String> handlerTimeout(HttpTimeoutException ex) {
+        return Map.of(
+                "message", "Sistema temporariamente indisponível.");
+    }
+
+
 }

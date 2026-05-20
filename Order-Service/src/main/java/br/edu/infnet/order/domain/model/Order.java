@@ -1,7 +1,9 @@
 package br.edu.infnet.order.domain.model;
 
 import br.edu.infnet.order.domain.enums.OrderStatus;
+import br.edu.infnet.order.integration.payment.enums.PaymentMethod;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -23,6 +25,8 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus orderStatus;
+    @Column(nullable = false)
+    private PaymentMethod paymentMethod;
     @Column(nullable = false)
     private BigDecimal totalAmount;
     @OneToMany(cascade = CascadeType.ALL)

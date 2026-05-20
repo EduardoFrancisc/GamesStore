@@ -6,6 +6,8 @@ import br.edu.infnet.order.domain.model.OrderItem;
 import br.edu.infnet.order.dto.CreateOrderRequest;
 import br.edu.infnet.order.dto.OrderItemDTO;
 import br.edu.infnet.order.dto.OrderResponse;
+import br.edu.infnet.order.integration.payment.client.PaymentClient;
+import br.edu.infnet.order.integration.payment.dto.PaymentRequest;
 import br.edu.infnet.order.integration.product.client.ProductClient;
 import br.edu.infnet.order.integration.product.dto.ProductResponse;
 import br.edu.infnet.order.repository.OrderRepository;
@@ -22,12 +24,14 @@ import java.util.UUID;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductClient  productClient;
+    private final PaymentClient paymentClient;
 
     public OrderService(
             OrderRepository orderRepository,
-            ProductClient productClient) {
+            ProductClient productClient, PaymentClient paymentClient) {
         this.orderRepository = orderRepository;
         this.productClient = productClient;
+        this.paymentClient = paymentClient;
     }
 
     public OrderResponse create(CreateOrderRequest request) {
@@ -59,6 +63,13 @@ public class OrderService {
 
         //Retira os itens do stock
         productClient.reduceProductQuantityStock(request.getItems());
+
+        //pagamento
+        paymentClient.create(new PaymentRequest(
+                o.getId(),
+                o.getTotalAmount(),
+                o.getPaymentMethod()
+        ));
 
         orderRepository.save(o);
 

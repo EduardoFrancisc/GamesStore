@@ -26,11 +26,10 @@ public class ProductClient {
                 })
                 .body(ProductResponse.class);
     }
+
     public void reduceProductQuantityStock(List<OrderItemDTO> orderItemDTOs) {
         ProductRestClient.patch()
                 .uri("/products/update-stock")
-                .body(orderItemDTOs)
-                .retrieve()
-                .body(OrderItemDTO.class);
+                .body(orderItemDTOs);
     }
 }
