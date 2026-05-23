@@ -6,6 +6,7 @@ import br.edu.infnet.order.domain.model.OrderItem;
 import br.edu.infnet.order.dto.CreateOrderRequest;
 import br.edu.infnet.order.dto.OrderItemDTO;
 import br.edu.infnet.order.dto.OrderResponse;
+import br.edu.infnet.order.exception.OrderPaymentTimeoutException;
 import br.edu.infnet.order.integration.payment.client.PaymentClient;
 import br.edu.infnet.order.integration.payment.dto.PaymentRequest;
 import br.edu.infnet.order.integration.product.client.ProductClient;
@@ -56,24 +57,44 @@ public class OrderService {
             );
         }
 
+        o.setPaymentMethod(request.getPaymentMethod());
         o.setItems(items);
         o.setOrderDate(LocalDateTime.now());
         o.setOrderStatus(OrderStatus.PENDING);
         o.setTotalAmount(total);
 
-        //Retira os itens do stock
+        //SALVAR PRIMEIRO para gerar o ID
+        Order savedOrder = orderRepository.save(o);
+
         productClient.reduceProductQuantityStock(request.getItems());
 
-        //pagamento
-        paymentClient.create(new PaymentRequest(
-                o.getId(),
-                o.getTotalAmount(),
-                o.getPaymentMethod()
-        ));
+        try {
+            paymentClient.create(new PaymentRequest(
+                    savedOrder.getId(),
+                    savedOrder.getTotalAmount(),
+                    savedOrder.getPaymentMethod()
+            ));
 
-        orderRepository.save(o);
+            savedOrder.setOrderStatus(OrderStatus.CONFIRMED);
+            Order confirmedOrder = orderRepository.save(savedOrder);
+            return toResponse(confirmedOrder);
 
-        return toResponse(o);
+        } catch (Exception e) {
+            if ("PAYMENT_TIMEOUT_FALLBACK".equals(e.getMessage())) {
+
+                savedOrder.setOrderStatus(OrderStatus.PENDING);
+                orderRepository.save(savedOrder);
+
+                throw new OrderPaymentTimeoutException(
+                        "O gateway de pagamento demorou muito para responder. O pedido foi retido como PENDENTE.",
+                        savedOrder.getId()
+                );
+            } else {
+                savedOrder.setOrderStatus(OrderStatus.CANCELED);
+                orderRepository.save(savedOrder);
+                throw e;
+            }
+        }
     }
 
     public OrderResponse findById(UUID id) {

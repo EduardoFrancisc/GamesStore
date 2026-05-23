@@ -36,7 +36,6 @@ public class ProductService {
     }
 
     public void reduceProductQuantityStockBatch(List<OrderItemDTO> items) {
-        // Fase 1: Validação (Garante o "Tudo ou Nada")
         for (OrderItemDTO item : items) {
             Product product = productRepository.findById(item.productId())
                     .orElseThrow(() -> new ProductNotFoundException("Product not found: " + item.productId()));
@@ -46,7 +45,6 @@ public class ProductService {
             }
         }
 
-        // Fase 2: Dedução do Estoque
         for (OrderItemDTO item : items) {
             Product product = productRepository.findById(item.productId()).get();
             product.setStockQuantity(product.getStockQuantity() - item.quantity());

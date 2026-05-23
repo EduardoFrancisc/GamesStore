@@ -7,8 +7,10 @@ import br.com.infnet.payment.dto.PaymentResponse;
 import br.com.infnet.payment.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,14 +22,24 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public PaymentResponse create(PaymentRequest order) {
-        Payment payment = new Payment();
-        payment.setOrderId(order.orderId());
-        payment.setAmount(order.amount());
-        payment.setPaymentMethod(order.paymentMethod());
+    public PaymentResponse create(PaymentRequest request) {
 
-        payment.setStatus(PaymentStatus.PENDING); //o que fazer aqui?
-        //Acho que payment deve ter um client de order para avisar o status do pagamento
+        try {
+            // número aleatório de tempo
+            long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8001);
+            Thread.sleep(tempoAleatorio);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        Payment payment = new Payment();
+        payment.setOrderId(request.orderId());
+        payment.setAmount(request.amount());
+        payment.setPaymentMethod(request.paymentMethod());
+        payment.setStatus(PaymentStatus.APPROVED);
+        payment.setCreatedAt(LocalDateTime.now());
+        payment.setUpdatedAt(LocalDateTime.now());
 
         Payment savedPayment = paymentRepository.save(payment);
         return toResponse(savedPayment);
@@ -40,10 +52,7 @@ public class PaymentService {
     }
 
     public List<PaymentResponse> getAll() {
-        List<Payment> payments = paymentRepository.findAll();
-        return payments.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        return paymentRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     public PaymentResponse updateStatus(UUID id, PaymentStatus newStatus) {
@@ -51,6 +60,7 @@ public class PaymentService {
                 .orElseThrow(() -> new RuntimeException("Pagamento não encontrado para o ID: " + id));
 
         payment.setStatus(newStatus);
+        payment.setUpdatedAt(LocalDateTime.now());
 
         Payment updatedPayment = paymentRepository.save(payment);
         return toResponse(updatedPayment);

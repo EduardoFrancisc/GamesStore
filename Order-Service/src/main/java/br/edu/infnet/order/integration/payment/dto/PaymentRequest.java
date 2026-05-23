@@ -8,7 +8,11 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record PaymentRequest(
-        @NotNull UUID orderId,
-        @NotNull @Min(0) BigDecimal amount,
-        @NotNull PaymentMethod paymentMethod
+        @NotNull
+        UUID orderId,
+        @Min(0)
+        @NotNull
+        BigDecimal amount,
+        @NotNull(message = "O pedido deve ter o método de pagamento")
+        PaymentMethod paymentMethod
 ) {}

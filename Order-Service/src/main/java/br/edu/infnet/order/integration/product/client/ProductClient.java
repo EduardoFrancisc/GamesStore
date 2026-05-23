@@ -3,6 +3,7 @@ package br.edu.infnet.order.integration.product.client;
 import br.edu.infnet.order.dto.OrderItemDTO;
 import br.edu.infnet.order.integration.product.exception.ProductNotFoundException;
 import br.edu.infnet.order.integration.product.dto.ProductResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -13,7 +14,8 @@ import java.util.List;
 public class ProductClient {
     private final RestClient ProductRestClient;
 
-    public ProductClient(RestClient ProductRestClient) {
+    //"Consider using @Qualifier to identify the bean that should be consumed".
+    public ProductClient(@Qualifier("productRestClient")RestClient ProductRestClient) {
         this.ProductRestClient = ProductRestClient;
     }
 
@@ -30,6 +32,8 @@ public class ProductClient {
     public void reduceProductQuantityStock(List<OrderItemDTO> orderItemDTOs) {
         ProductRestClient.patch()
                 .uri("/products/update-stock")
-                .body(orderItemDTOs);
+                .body(orderItemDTOs)
+                .retrieve()
+                .toBodilessEntity();
     }
 }

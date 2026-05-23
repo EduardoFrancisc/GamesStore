@@ -15,7 +15,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "payments")
 public class Payment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -30,14 +29,12 @@ public class Payment {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(name = "payment_method")
+    @Column(nullable = false)
     private PaymentMethod paymentMethod;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 }
