@@ -4,4 +4,12 @@ spring:
   elasticsearch:
     uris: http://localhost:9201
 server:
-  port: 8082
+  port: 0
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defalut-zone: http://localhost:8761/eureka/
+      register-with-eureka: true
+      fetch-registry: true
