@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: payment-service
+              uri: lb://PAYMENTSERVICE
+              predicates:
+                - Path=/payments/**
+            - id: order-service
+              uri: lb://ORDERSERVICE
+              predicates:
+                - Path=/orders/**
+            - id: product-service
+              uri: lb://PRODUCTSERVICE
+              predicates:
+                - Path=/products/**
+server:
+  port: 9999
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka:8761/eureka
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    instance-id: ${spring.application.name}
+    prefer-ip-address: true
