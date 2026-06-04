@@ -1,6 +1,12 @@
 spring:
   application:
     name: payment-service
+  spring:
+    kafka:
+      bootstrap-servers: localhost:9092
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   datasource:
     url: jdbc:postgresql://localhost:5432/paymentdb
@@ -11,7 +17,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate #update para criar as tableas
+      ddl-auto: update #update para criar as tableas # validate
     show-sql: true
     properties:
       hibernate:

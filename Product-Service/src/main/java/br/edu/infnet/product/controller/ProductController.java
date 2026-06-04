@@ -6,6 +6,7 @@ import br.edu.infnet.product.integration.order.OrderItemDTO;
 import br.edu.infnet.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,5 +41,4 @@ public class ProductController {
     public void reduceProductQuantityStock(@Valid @RequestBody List<OrderItemDTO> items) {
         productService.reduceProductQuantityStockBatch(items);
     }
-
 }

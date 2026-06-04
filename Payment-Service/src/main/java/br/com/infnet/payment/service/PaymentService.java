@@ -5,6 +5,7 @@ import br.com.infnet.payment.domain.model.Payment;
 import br.com.infnet.payment.dto.PaymentRequest;
 import br.com.infnet.payment.dto.PaymentResponse;
 import br.com.infnet.payment.repository.PaymentRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,16 +18,18 @@ import java.util.stream.Collectors;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public PaymentService(PaymentRepository paymentRepository) {
+    public PaymentService(PaymentRepository paymentRepository, KafkaTemplate<String, Object> kafkaTemplate) {
         this.paymentRepository = paymentRepository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public PaymentResponse create(PaymentRequest request) {
 
         try {
             // número aleatório de tempo
-            long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8001);
+            long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8000);
             Thread.sleep(tempoAleatorio);
 
         } catch (InterruptedException e) {
@@ -42,7 +45,11 @@ public class PaymentService {
         payment.setUpdatedAt(LocalDateTime.now());
 
         Payment savedPayment = paymentRepository.save(payment);
-        return toResponse(savedPayment);
+        PaymentResponse response = toResponse(savedPayment);
+
+        kafkaTemplate.send("payment-processed", savedPayment.getOrderId().toString(), response);
+
+        return response;
     }
 
     public PaymentResponse getById(UUID id) {

@@ -1,6 +1,7 @@
 package br.edu.infnet.order.integration.payment.client;
 
 import br.edu.infnet.order.integration.payment.dto.PaymentRequest;
+import br.edu.infnet.order.integration.payment.dto.PaymentResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -15,20 +16,21 @@ public class PaymentClient {
         this.PaymentRestClient = PaymentRestClient;
     }
 
-    public void create(PaymentRequest paymentRequest) {
+    public PaymentResponse create(PaymentRequest paymentRequest) {
         try {
-            PaymentRestClient.post()
+            // Agora retorna corretamente o DTO mapeado!
+            return PaymentRestClient.post()
                     .uri("/payments")
                     .body(paymentRequest)
                     .retrieve()
-                    .toBodilessEntity();
+                    .body(PaymentResponse.class);
 
         } catch (ResourceAccessException e) {
-            paymentFallback(paymentRequest, e);
+            throw paymentFallback(paymentRequest, e);
         }
     }
 
-    public void paymentFallback(PaymentRequest paymentRequest, Throwable t) {
-        throw new RuntimeException("PAYMENT_TIMEOUT_FALLBACK");
+    public RuntimeException paymentFallback(PaymentRequest paymentRequest, Throwable t) {
+        return new RuntimeException("PAYMENT_TIMEOUT_FALLBACK");
     }
 }

@@ -9,6 +9,7 @@ import br.edu.infnet.order.dto.OrderResponse;
 import br.edu.infnet.order.exception.OrderPaymentTimeoutException;
 import br.edu.infnet.order.integration.payment.client.PaymentClient;
 import br.edu.infnet.order.integration.payment.dto.PaymentRequest;
+import br.edu.infnet.order.integration.payment.dto.PaymentResponse;
 import br.edu.infnet.order.integration.product.client.ProductClient;
 import br.edu.infnet.order.integration.product.dto.ProductResponse;
 import br.edu.infnet.order.repository.OrderRepository;
@@ -24,7 +25,7 @@ import java.util.UUID;
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final ProductClient  productClient;
+    private final ProductClient productClient;
     private final PaymentClient paymentClient;
 
     public OrderService(
@@ -62,40 +63,42 @@ public class OrderService {
         o.setOrderDate(LocalDateTime.now());
         o.setOrderStatus(OrderStatus.PENDING);
         o.setTotalAmount(total);
-
-        //SALVAR PRIMEIRO para gerar o ID
         Order savedOrder = orderRepository.save(o);
 
-        productClient.reduceProductQuantityStock(request.getItems());
-
+        //primeiro tenta fazer o pagamento
         try {
-            paymentClient.create(new PaymentRequest(
+            PaymentResponse paymentResponse = paymentClient.create(new PaymentRequest(
                     savedOrder.getId(),
                     savedOrder.getTotalAmount(),
                     savedOrder.getPaymentMethod()
             ));
 
-            savedOrder.setOrderStatus(OrderStatus.CONFIRMED);
-            Order confirmedOrder = orderRepository.save(savedOrder);
-            return toResponse(confirmedOrder);
+            switch (paymentResponse.status()) {
+                case APPROVED:
+                    productClient.reduceProductQuantityStock(request.getItems());
+                    savedOrder.setOrderStatus(OrderStatus.CONFIRMED);
+
+                case REJECTED:
+                    throw new IllegalArgumentException("Pagamento recusado.");
+
+                case PENDING:
+                    savedOrder.setOrderStatus(OrderStatus.PENDING);
+            }
+            return toResponse(orderRepository.save(savedOrder));
 
         } catch (Exception e) {
             if ("PAYMENT_TIMEOUT_FALLBACK".equals(e.getMessage())) {
-
-                savedOrder.setOrderStatus(OrderStatus.PENDING);
-                orderRepository.save(savedOrder);
-
                 throw new OrderPaymentTimeoutException(
                         "O gateway de pagamento demorou muito para responder. O pedido foi retido como PENDENTE.",
                         savedOrder.getId()
                 );
-            } else {
-                savedOrder.setOrderStatus(OrderStatus.CANCELED);
-                orderRepository.save(savedOrder);
-                throw e;
             }
+            savedOrder.setOrderStatus(OrderStatus.CANCELED);
+            orderRepository.save(savedOrder);
+            throw e;
         }
     }
+
 
     public OrderResponse findById(UUID id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order not found: " + id));
@@ -106,7 +109,7 @@ public class OrderService {
         return orderRepository.findAll().stream().map(this::toResponse).toList();
     }
 
-    private OrderResponse toResponse(Order o){
+    private OrderResponse toResponse(Order o) {
         return new OrderResponse(
                 o.getId(),
                 o.getCustomerName(),

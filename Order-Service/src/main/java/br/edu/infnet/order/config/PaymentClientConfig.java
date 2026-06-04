@@ -1,10 +1,8 @@
 package br.edu.infnet.order.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestClient;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 
@@ -13,25 +11,9 @@ import java.time.Duration;
 
 @Configuration
 public class PaymentClientConfig {
-
-    @Bean()
-    @Primary
-    public RestClient.Builder restClientBuilder () {
-        return RestClient.builder();
-    }
-
     @Bean
-    @LoadBalanced
-    public RestClient.Builder loadBalancedRestClientBuilder () {
-        return RestClient.builder();
-    }
-
-    @Bean
-    @LoadBalanced
     public RestClient paymentRestClient(
-            @Value("${integration.payment.base-url}") String baseUrl,
-            @LoadBalanced RestClient.Builder builder
-    ) {
+            @Value("${integration.payment.base-url}") String baseUrl) {
 
         HttpClient client = HttpClient
                 .newBuilder()
