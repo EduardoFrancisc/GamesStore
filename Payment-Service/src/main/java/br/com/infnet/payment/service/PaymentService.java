@@ -31,7 +31,7 @@ public class PaymentService {
     }
 
     public PaymentResponse create(PaymentRequest request) {
-
+        System.out.println("Ordem de pagamento recebida");
         try {
             long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8000);
             Thread.sleep(tempoAleatorio);
@@ -57,9 +57,8 @@ public class PaymentService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        kafkaTemplate.send("payment-processed", savedPayment.getOrderId().toString(), jsonMessage);
-        System.out.println("Mensagem enviada com sucesso pelo KafkaConfig: " + jsonMessage);
-
+        kafkaTemplate.send("pagamentos.aprovados", savedPayment.getOrderId().toString(), jsonMessage);
+        System.out.println("Mensagem enviada com sucesso: " + jsonMessage);
         return response;
     }
 

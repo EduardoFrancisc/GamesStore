@@ -18,6 +18,7 @@ public class PaymentClientConfig {
     public RestClient.Builder restClientBuilder(){
         return RestClient.builder();
     }
+
     @Bean
     @LoadBalanced
     public RestClient.Builder loadBalancedRestClientBuilder(){
@@ -27,7 +28,7 @@ public class PaymentClientConfig {
     @Bean
     public RestClient paymentRestClient(
             @Value("${integration.payment.base-url}") String baseUrl,
-            RestClient.Builder builder
+            @LoadBalanced  RestClient.Builder builder
     ) {
 
         HttpClient client = HttpClient
