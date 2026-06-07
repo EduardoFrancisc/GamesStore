@@ -6,10 +6,9 @@ import br.edu.infnet.product.dto.ProductResponse;
 import br.edu.infnet.product.exception.ProductNotFoundException;
 import br.edu.infnet.product.exception.StockQuantityException;
 import br.edu.infnet.product.integration.order.OrderItemDTO;
+import br.edu.infnet.product.metrics.ProductMetrics;
 import br.edu.infnet.product.repository.ProductRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -17,9 +16,13 @@ import java.util.stream.StreamSupport;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ProductMetrics productMetrics;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository,
+                          ProductMetrics productMetrics
+    ) {
         this.productRepository = productRepository;
+        this.productMetrics = productMetrics;
     }
 
     public ProductResponse create(CreateProductRequest request) {
@@ -49,13 +52,13 @@ public class ProductService {
             Product product = productRepository.findById(item.productId()).get();
             product.setStockQuantity(product.getStockQuantity() - item.quantity());
             productRepository.save(product);
+            productMetrics.incrementarProdutosDecrescidos();
         }
     }
 
     public ProductResponse findById(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found: " + id)); // Futuramente crie a ProductNotFoundException
-
+                .orElseThrow(() -> new RuntimeException("Product not found: " + id));
         return toResponse(product);
     }
 

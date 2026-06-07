@@ -12,6 +12,7 @@ import br.edu.infnet.order.integration.payment.dto.PaymentRequest;
 import br.edu.infnet.order.integration.payment.dto.PaymentResponse;
 import br.edu.infnet.order.integration.product.client.ProductClient;
 import br.edu.infnet.order.integration.product.dto.ProductResponse;
+import br.edu.infnet.order.metrics.OrderMetrics;
 import br.edu.infnet.order.repository.OrderRepository;
 import br.edu.infnet.order.exception.OrderNotFoundException;
 import org.springframework.stereotype.Service;
@@ -27,16 +28,23 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
     private final PaymentClient paymentClient;
+    private final OrderMetrics orderMetrics;
 
     public OrderService(
             OrderRepository orderRepository,
-            ProductClient productClient, PaymentClient paymentClient) {
+            ProductClient productClient, PaymentClient paymentClient, OrderMetrics orderMetrics) {
         this.orderRepository = orderRepository;
         this.productClient = productClient;
         this.paymentClient = paymentClient;
+        this.orderMetrics = orderMetrics;
     }
 
-    public OrderResponse create(CreateOrderRequest request) {
+    public OrderResponse create(CreateOrderRequest request){
+        return orderMetrics.medirTempoDuracaoPeido(()-> fazerPedido(request));
+    }
+
+    public OrderResponse fazerPedido(CreateOrderRequest request) {
+        orderMetrics.incrementarPedidoCriado();
         Order o = new Order();
         o.setCustomerName(request.getCustomerName());
 
@@ -77,12 +85,13 @@ public class OrderService {
                 case APPROVED:
                     productClient.reduceProductQuantityStock(request.getItems());
                     savedOrder.setOrderStatus(OrderStatus.CONFIRMED);
-
+                    orderMetrics.incrementarPagamentoAprovado();
                 case REJECTED:
-                    throw new IllegalArgumentException("Pagamento recusado.");
-
+                    savedOrder.setOrderStatus(OrderStatus.CANCELED);
+                    orderMetrics.incrementarPagamentoCancelado();
                 case PENDING:
                     savedOrder.setOrderStatus(OrderStatus.PENDING);
+                    orderMetrics.incrementarPagamentoPendente();
             }
             return toResponse(orderRepository.save(savedOrder));
 
@@ -98,7 +107,6 @@ public class OrderService {
             throw e;
         }
     }
-
 
     public OrderResponse findById(UUID id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order not found: " + id));

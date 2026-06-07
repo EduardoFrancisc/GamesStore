@@ -13,3 +13,8 @@ eureka:
       defalut-zone: http://localhost:8761/eureka/
       register-with-eureka: true
       fetch-registry: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
