@@ -15,6 +15,7 @@ import br.edu.infnet.order.integration.product.dto.ProductResponse;
 import br.edu.infnet.order.metrics.OrderMetrics;
 import br.edu.infnet.order.repository.OrderRepository;
 import br.edu.infnet.order.exception.OrderNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -73,7 +75,9 @@ public class OrderService {
         o.setTotalAmount(total);
         Order savedOrder = orderRepository.save(o);
 
-        //primeiro tenta fazer o pagamento
+        log.info("Peido {} salvo com sucesso.", savedOrder.getId());
+        log.info("Tentando pagamento para pedido {}.", savedOrder.getId());
+
         try {
             PaymentResponse paymentResponse = paymentClient.create(new PaymentRequest(
                     savedOrder.getId(),

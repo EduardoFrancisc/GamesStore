@@ -4,6 +4,8 @@ import br.edu.infnet.order.dto.CreateOrderRequest;
 import br.edu.infnet.order.dto.OrderResponse;
 import br.edu.infnet.order.service.OrderService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import java.util.UUID;
 @RequestMapping("/orders")
 public class OrderController {
     private final OrderService orderService;
+    private final Logger log = LoggerFactory.getLogger(OrderController.class);
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
@@ -22,16 +25,19 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse create(@Valid @RequestBody CreateOrderRequest request){
+        log.info("Novo pedido feito por {}", request.getCustomerName());
         return  orderService.create(request);
     }
 
     @GetMapping
     public List<OrderResponse> findAll(){
+        log.info("Listando todos os terminais.");
         return orderService.findAll();
     }
 
     @GetMapping("/{id}")
     public OrderResponse findByid(@PathVariable UUID id){
+        log.info("Procurando por pedido {}", id);
         return orderService.findById(id);
     }
 }

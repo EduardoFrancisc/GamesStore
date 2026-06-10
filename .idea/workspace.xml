@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="Order como consumidor e Payment como produtor, kafka funcionando perfeitamente com comunicação assíncrona. Evento de pagamento aprovado depois de cair em time out.">
+      <change afterPath="$PROJECT_DIR$/Infra/docker-compose-elk.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Infra/logstash/pipeline/logstash.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Order-Service/src/main/resources/logback-spring.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Order-Service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/controller/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/service/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/service/OrderService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
