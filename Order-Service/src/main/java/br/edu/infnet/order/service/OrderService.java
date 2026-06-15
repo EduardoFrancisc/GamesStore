@@ -89,18 +89,22 @@ public class OrderService {
                 case APPROVED:
                     productClient.reduceProductQuantityStock(request.getItems());
                     savedOrder.setOrderStatus(OrderStatus.CONFIRMED);
+                    log.info("Pedido {} APPROVED com sucesso.", savedOrder.getId());
                     orderMetrics.incrementarPagamentoAprovado();
                 case REJECTED:
                     savedOrder.setOrderStatus(OrderStatus.CANCELED);
+                    log.info("Pedido {} foi rejeitado.", savedOrder.getId());
                     orderMetrics.incrementarPagamentoCancelado();
                 case PENDING:
                     savedOrder.setOrderStatus(OrderStatus.PENDING);
+                    log.info("Pedido {} foi retido como pendente.", savedOrder.getId());
                     orderMetrics.incrementarPagamentoPendente();
             }
             return toResponse(orderRepository.save(savedOrder));
 
         } catch (Exception e) {
             if ("PAYMENT_TIMEOUT_FALLBACK".equals(e.getMessage())) {
+                log.error("Falha ao pagamento pedido {}.", savedOrder.getId());
                 throw new OrderPaymentTimeoutException(
                         "O gateway de pagamento demorou muito para responder. O pedido foi retido como PENDENTE.",
                         savedOrder.getId()

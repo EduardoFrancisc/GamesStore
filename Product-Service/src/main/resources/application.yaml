@@ -2,18 +2,24 @@ spring:
   application:
     name: product-service
   elasticsearch:
-    uris: http://localhost:9201
+    uris: http://product-elasticsearch:9200/
+
 server:
   port: 0
+
 eureka:
   instance:
     instance-id: ${spring.application.name}:${random.value}
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defalut-zone: http://localhost:8761/eureka/
-      register-with-eureka: true
-      fetch-registry: true
+      defaultZone: http://eureka:8761/eureka/
+
 management:
+  tracing:
+    sampling:
+      probability: 1.0
   endpoints:
     web:
       exposure:

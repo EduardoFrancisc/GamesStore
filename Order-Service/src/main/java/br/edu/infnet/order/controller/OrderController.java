@@ -31,7 +31,7 @@ public class OrderController {
 
     @GetMapping
     public List<OrderResponse> findAll(){
-        log.info("Listando todos os terminais.");
+        log.info("Listando todos os pedidos.");
         return orderService.findAll();
     }
 

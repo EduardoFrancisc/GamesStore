@@ -1,0 +1,180 @@
+version: '3.8'
+
+networks:
+  gamesstore-network:
+    driver: bridge
+
+services:
+  eureka:
+    build:
+      context: ./Eureka/docker
+      dockerfile: Dockerfile
+    container_name: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - gamesstore-network
+
+  elasticsearch-logs:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    container_name: elasticsearch-logs
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9201:9200"
+    networks:
+      - gamesstore-network
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.2
+    container_name: logstash
+    volumes:
+      - ./Infra/logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5000:5000"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-logs:9200
+    depends_on:
+      - elasticsearch-logs
+    networks:
+      - gamesstore-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.2
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-logs:9200
+    depends_on:
+      - elasticsearch-logs
+    networks:
+      - gamesstore-network
+
+  product-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.8
+    container_name: product-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9201:9200"
+    networks:
+      - gamesstore-network
+
+  product-elasticsearch-seeder:
+    image: curlimages/curl:8.4.0
+    container_name: product-elasticsearch-seeder
+    depends_on:
+      - product-elasticsearch
+    volumes:
+      - ./Product-Service/docker/init-data.sh:/init-data.sh
+    command: ["/bin/sh", "/init-data.sh"]
+    networks:
+      - gamesstore-network
+
+  product-service:
+    build:
+      context: ./Product-Service/docker
+      dockerfile: Dockerfile
+    container_name: product-service
+    depends_on:
+      - eureka
+      - product-elasticsearch
+    networks:
+      - gamesstore-network
+
+  postgres-payment:
+    image: postgres:16
+    container_name: postgres-payment
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: paymentdb
+    ports:
+      - "5432:5432"
+    networks:
+      - gamesstore-network
+
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://kafka:29093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - gamesstore-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "9091:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: games-store
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+    networks:
+      - gamesstore-network
+
+  payment-service:
+    build:
+      context: ./Payment-Service/docker
+      dockerfile: Dockerfile
+    container_name: payment-service
+    depends_on:
+      - eureka
+      - postgres-payment
+      - kafka
+    networks:
+      - gamesstore-network
+
+  postgres-order:
+    image: postgres:16
+    container_name: postgres-order
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orderdb
+    ports:
+      - "5433:5432"
+    networks:
+      - gamesstore-network
+
+  order-service:
+    build:
+      context: ./Order-Service/docker
+      dockerfile: Dockerfile
+    container_name: order-service
+    depends_on:
+      - eureka
+      - kafka
+      - postgres-order
+    networks:
+      - gamesstore-network
+
+  gateway:
+    build:
+      context: ./Gateway/docker
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "9999:9999"
+    depends_on:
+      - eureka
+    networks:
+      - gamesstore-network

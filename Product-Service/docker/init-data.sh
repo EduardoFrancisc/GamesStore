@@ -4,7 +4,7 @@
 sleep 15
 
 # 1
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "The Last of Us Part II",
   "description": "Jogo de ação e sobrevivência pós-apocalíptico.",
@@ -16,7 +16,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 2
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Halo Infinite",
   "description": "A mais nova aventura de Master Chief.",
@@ -28,7 +28,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 3
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "The Legend of Zelda: Tears of the Kingdom",
   "description": "Aventura épica em mundo aberto por Hyrule.",
@@ -40,7 +40,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 4
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Cyberpunk 2077",
   "description": "RPG de ação em Night City.",
@@ -52,7 +52,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 5
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "God of War Ragnarok",
   "description": "Kratos e Atreus enfrentam o fim do mundo nórdico.",
@@ -64,7 +64,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 6
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Red Dead Redemption",
   "description": "A clássica jornada de John Marston.",
@@ -76,7 +76,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 7
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Gears of War 4",
   "description": "O início de uma nova saga para a franquia Gears.",
@@ -88,7 +88,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 8
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Demon Souls",
   "description": "O jogo que deu origem ao gênero Soulsborne.",
@@ -100,7 +100,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 9
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Forza Horizon 5",
   "description": "Corridas deslumbrantes pelas paisagens do México.",
@@ -112,7 +112,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 10
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Marvel Spider-Man 2",
   "description": "Peter Parker e Miles Morales lutam contra Venom.",
@@ -124,7 +124,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 11
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Super Mario Odyssey",
   "description": "Uma jornada global incrível com o Mario e o Cappy.",
@@ -136,7 +136,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 12
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Elden Ring",
   "description": "O aclamado RPG de ação da FromSoftware.",
@@ -148,7 +148,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 13
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Bloodborne",
   "description": "Sobreviva aos horrores da cidade de Yharnam.",
@@ -160,7 +160,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 14
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Animal Crossing: New Horizons",
   "description": "Crie o seu paraíso numa ilha deserta.",
@@ -172,7 +172,7 @@ curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: a
 }'
 
 # 15
-curl -s -X POST "http://elasticsearch-v2:9200/products/_doc" -H 'Content-Type: application/json' -d'
+curl -s -X POST "http://product-elasticsearch:9200/products/_doc" -H 'Content-Type: application/json' -d'
 {
   "title": "Starfield",
   "description": "O primeiro novo universo da Bethesda em 25 anos.",

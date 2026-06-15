@@ -31,15 +31,18 @@ public class PaymentService {
     }
 
     public PaymentResponse create(PaymentRequest request) {
-        System.out.println("Ordem de pagamento recebida");
+        System.out.println("\n⏳ [PAYMENT] Ordem de pagamento recebida para o pedido: " + request.orderId());
+
+        // 1. Simulação de processamento bancário (Demora entre 3 e 8 segundos)
         try {
             long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8000);
+            System.out.println("⏳ [PAYMENT] Processando no gateway bancário... (Estimativa: " + (tempoAleatorio / 1000) + "s)");
             Thread.sleep(tempoAleatorio);
-
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
+        // 2. Construção e persistência da entidade
         Payment payment = new Payment();
         payment.setOrderId(request.orderId());
         payment.setAmount(request.amount());
@@ -51,14 +54,19 @@ public class PaymentService {
         Payment savedPayment = paymentRepository.save(payment);
         PaymentResponse response = toResponse(savedPayment);
 
-        String jsonMessage = null;
+        // 3. Serialização e publicação do Evento de Domínio
         try {
-            jsonMessage = objectMapper.writeValueAsString(response);
+            String jsonMessage = objectMapper.writeValueAsString(response);
+
+            // Envio com Chave (Order ID) e Valor (JSON) no tópico em português
+            kafkaTemplate.send("pagamentos.aprovados", savedPayment.getOrderId().toString(), jsonMessage);
+            System.out.println("✅ [KAFKA] Evento de domínio publicado com sucesso: " + jsonMessage);
+
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            System.err.println("🚨 [ERRO CRÍTICO] Falha ao converter a resposta para JSON: " + e.getMessage());
+            throw new RuntimeException("Erro ao serializar evento Kafka", e);
         }
-        kafkaTemplate.send("pagamentos.aprovados", savedPayment.getOrderId().toString(), jsonMessage);
-        System.out.println("Mensagem enviada com sucesso: " + jsonMessage);
+
         return response;
     }
 

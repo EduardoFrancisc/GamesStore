@@ -2,9 +2,9 @@ spring:
   application:
     name: payment-service
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:29092
   datasource:
-    url: jdbc:postgresql://localhost:5432/paymentdb
+    url: jdbc:postgresql://postgres-payment:5432/paymentdb
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -16,13 +16,20 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
 server:
   port: 0
+
 eureka:
   instance:
     instance-id: ${spring.application.name}:${random.value}
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-      register-with-eureka: true
-      fetch-registry: true
+      defaultZone: http://eureka:8761/eureka/
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
