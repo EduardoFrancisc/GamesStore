@@ -3,7 +3,6 @@ version: '3.8'
 networks:
   gamesstore-network:
     driver: bridge
-
 services:
   eureka:
     build:
@@ -16,7 +15,7 @@ services:
       - gamesstore-network
 
   elasticsearch-logs:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.8
     container_name: elasticsearch-logs
     environment:
       - discovery.type=single-node
@@ -41,18 +40,6 @@ services:
     networks:
       - gamesstore-network
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.2
-    container_name: kibana
-    ports:
-      - "5601:5601"
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch-logs:9200
-    depends_on:
-      - elasticsearch-logs
-    networks:
-      - gamesstore-network
-
   product-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.2.8
     container_name: product-elasticsearch
@@ -62,7 +49,7 @@ services:
       - xpack.security.http.ssl.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
-      - "9201:9200"
+      - "9200:9200"
     networks:
       - gamesstore-network
 
@@ -85,6 +72,7 @@ services:
     depends_on:
       - eureka
       - product-elasticsearch
+      - logstash
     networks:
       - gamesstore-network
 
@@ -140,6 +128,7 @@ services:
       - eureka
       - postgres-payment
       - kafka
+      - logstash
     networks:
       - gamesstore-network
 
@@ -164,6 +153,7 @@ services:
       - eureka
       - kafka
       - postgres-order
+      - logstash
     networks:
       - gamesstore-network
 
@@ -176,5 +166,45 @@ services:
       - "9999:9999"
     depends_on:
       - eureka
+      - logstash
     networks:
       - gamesstore-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # Ajuste o caminho se a sua pasta for diferente
+      - ./Infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - gamesstore-prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    depends_on:
+      - eureka
+    networks:
+      - gamesstore-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: gamesstore-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - gamesstore-grafana-data:/var/lib/grafana
+    depends_on:
+      - logstash
+      - prometheus
+      - elasticsearch-logs
+    networks:
+      - gamesstore-network
+
+volumes:
+  gamesstore-prometheus-data:
+  gamesstore-grafana-data:

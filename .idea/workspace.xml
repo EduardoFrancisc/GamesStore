@@ -4,37 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="Adicionando centralização de logs(apenas no order-service, pelo menos por enquanto). E o grafana para dashboard das métricas">
-      <change afterPath="$PROJECT_DIR$/Eureka/docker/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Gateway/docker/Dockerfile" afterDir="false" />
+    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade.">
       <change afterPath="$PROJECT_DIR$/Gateway/docker/app.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Gateway/src/main/resources/logback-spring.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Order-Service/docker/app.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Payment-Service/docker/Dockerfile" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Payment-Service/docker/app.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Product-Service/docker/Dockerfile" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Product-Service/docker/app.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Product-Service/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Eureka/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Eureka/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Eureka/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Eureka/src/main/resources/application.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Gateway/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/config/KafkaConsumerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/config/KafkaConsumerConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/controller/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/service/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/service/OrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Gateway/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/src/main/resources/logback-spring.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Infra/docker-compose-elk.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Infra/prometheus/prometheus.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Infra/prometheus/prometheus.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Order-Service/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/java/br/com/infnet/payment/service/PaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/java/br/com/infnet/payment/service/PaymentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Product-Service/docker/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Product-Service/docker/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Product-Service/docker/init-data.sh" beforeDir="false" afterPath="$PROJECT_DIR$/Product-Service/docker/init-data.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Product-Service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Product-Service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Product-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Product-Service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Payment-Service/docker/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/logback-spring.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Product-Service/docker/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,6 +56,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHELLCHECK.PATH": "I do mind",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
@@ -161,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781050157033</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade.">
+      <option name="closed" value="true" />
+      <created>1781482517402</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1781482517402</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -173,6 +167,7 @@
     <MESSAGE value="Endpoints acessíveis através do gateway(ainda sem estaren dockerizados)" />
     <MESSAGE value="Order como consumidor e Payment como produtor, kafka funcionando perfeitamente com comunicação assíncrona. Evento de pagamento aprovado depois de cair em time out." />
     <MESSAGE value="Adicionando centralização de logs(apenas no order-service, pelo menos por enquanto). E o grafana para dashboard das métricas" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adicionando centralização de logs(apenas no order-service, pelo menos por enquanto). E o grafana para dashboard das métricas" />
+    <MESSAGE value="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade." />
+    <option name="LAST_COMMIT_MESSAGE" value="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade." />
   </component>
 </project>
