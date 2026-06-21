@@ -35,7 +35,7 @@ O ecossistema adota duas bases de dados de naturezas distintas para garantir a o
 | **Payment-Service** | Processamento de pagamentos de forma assíncrona via Kafka. | Dinâmica | PostgreSQL |
 | **Order-Service** | Orquestração do checkout. Chama serviços via RestClient e emite eventos no Kafka. | Dinâmica | PostgreSQL |
 | **Kafka-UI** | Interface visual para monitoramento dos tópicos e mensagens no Kafka. | `9091` | N/A |
-| **Grafana** | Dashboards unificados de visualização de métricas e logs. | `3000` | Consome Prometheus e Elasticsearch (Logs) |
+| **Grafana** | Dashboard unificado de visualização de métricas. | `3000` | Consome Prometheus e Elasticsearch (Logs) |
 
 Aqui está a atualização do seu tópico **"Como executar"** estruturada exatamente com a estratégia de orquestração por etapas que pediu, garantindo que o build do Docker encontre os binários e que os bancos pesados fiquem prontos antes do restante do ecossistema:
 
