@@ -4,18 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="gateway funcionando e prometheus e elasticsearch conectando no grafana mas ainda sem dashboards.">
+    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="Att readme">
       <change afterPath="$PROJECT_DIR$/Eureka/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Gateway/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Order-Service/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Payment-Service/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Product-Service/docker/app.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Infra/logstash/pipeline/logstash.conf" beforeDir="false" afterPath="$PROJECT_DIR$/Infra/logstash/pipeline/logstash.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +156,31 @@
       <option name="project" value="LOCAL" />
       <updated>1781657620027</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Finalizando Projeto">
+      <option name="closed" value="true" />
+      <created>1782083484599</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1782083484599</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Att readme">
+      <option name="closed" value="true" />
+      <created>1782083595743</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1782083595743</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Att readme">
+      <option name="closed" value="true" />
+      <created>1782083734335</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1782083734335</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -176,6 +194,8 @@
     <MESSAGE value="Adicionando centralização de logs(apenas no order-service, pelo menos por enquanto). E o grafana para dashboard das métricas" />
     <MESSAGE value="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade." />
     <MESSAGE value="gateway funcionando e prometheus e elasticsearch conectando no grafana mas ainda sem dashboards." />
-    <option name="LAST_COMMIT_MESSAGE" value="gateway funcionando e prometheus e elasticsearch conectando no grafana mas ainda sem dashboards." />
+    <MESSAGE value="Finalizando Projeto" />
+    <MESSAGE value="Att readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="Att readme" />
   </component>
 </project>
