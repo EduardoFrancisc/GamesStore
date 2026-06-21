@@ -4,21 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade.">
+    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="gateway funcionando e prometheus e elasticsearch conectando no grafana mas ainda sem dashboards.">
+      <change afterPath="$PROJECT_DIR$/Eureka/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Gateway/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Order-Service/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Payment-Service/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Product-Service/docker/app.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gateway/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gateway/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Infra/docker-compose-elk.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Infra/prometheus/prometheus.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Infra/prometheus/prometheus.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/docker/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Product-Service/docker/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Infra/logstash/pipeline/logstash.conf" beforeDir="false" afterPath="$PROJECT_DIR$/Infra/logstash/pipeline/logstash.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Payment-Service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -46,23 +42,26 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="3Dxt4QfBzCXkbjceCQWpHfpqvH2" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHELLCHECK.PATH": "I do mind",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/duudu/Desktop/GamesStore/Gateway/docker"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;I do mind&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/duudu/Desktop/GamesStore&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\duudu\Desktop\GamesStore\Gateway\docker" />
@@ -155,7 +154,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781482517402</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="gateway funcionando e prometheus e elasticsearch conectando no grafana mas ainda sem dashboards.">
+      <option name="closed" value="true" />
+      <created>1781657620026</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1781657620027</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -168,6 +175,7 @@
     <MESSAGE value="Order como consumidor e Payment como produtor, kafka funcionando perfeitamente com comunicação assíncrona. Evento de pagamento aprovado depois de cair em time out." />
     <MESSAGE value="Adicionando centralização de logs(apenas no order-service, pelo menos por enquanto). E o grafana para dashboard das métricas" />
     <MESSAGE value="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade." />
-    <option name="LAST_COMMIT_MESSAGE" value="A maioria dos serviços dockerizados, api gateway ainda não funcionando, falta testa-lo e testar também a observalidade." />
+    <MESSAGE value="gateway funcionando e prometheus e elasticsearch conectando no grafana mas ainda sem dashboards." />
+    <option name="LAST_COMMIT_MESSAGE" value="gateway funcionando e prometheus e elasticsearch conectando no grafana mas ainda sem dashboards." />
   </component>
 </project>
