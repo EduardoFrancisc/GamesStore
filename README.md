@@ -25,6 +25,9 @@ O ecossistema adota duas bases de dados de naturezas distintas para garantir a o
 * **Centralização de Logs (Logstash + Elasticsearch):** Um **segundo cluster Elasticsearch** dedicado à infraestrutura atua como um motor de busca de documentos. Ele armazena e indexa os logs complexos ejetados pelas aplicações e trafegados via Logstash. Serve para investigar incidentes em profundidade (ex: responder "qual foi a linha de código que falhou e gerou este erro?").
 * **Visualização Unificada (Grafana):** Atua como a camada de visualização central da arquitetura. Ele é responsável por montar dashboards personalizados consumindo dados tanto do Prometheus (para gráficos de performance e métricas de negócio) quanto do Elasticsearch dedicado à infraestrutura (para análise de logs), unificando toda a saúde do ecossistema em um único painel operacional.
 
+<img width="1544" height="785" alt="image" src="https://github.com/user-attachments/assets/315224c5-3af1-48d5-b206-ca20af997b55" />
+<img width="1542" height="826" alt="image" src="https://github.com/user-attachments/assets/f6a77265-a924-4ece-a8c2-42f2ae770fbe" />
+
 ## Microservices e Infraestrutura
 
 | Serviço / Componente | Responsabilidade | Porta Pública | Banco de Dados / Infra |
