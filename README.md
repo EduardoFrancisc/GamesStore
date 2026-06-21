@@ -1,18 +1,3 @@
-docker-compose up -d (Sobe apenas o banco)
-
-docker-compose run --rm elasticsearch-seeder (Roda o seeder e o --rm garante que ele é apagado da sua máquina no segundo em que terminar de inserir os jogos).
-
-
-
-Exposição de métricas:
-pedidos criados
-Chamadas para outros microservices
-pagamentos aprovados
-
-
-
-
-
 # Games Store Microservices (Assessment)
 
 Este projeto é um sistema distribuído de e-commerce voltado para a venda de jogos eletrônicos, desenvolvido para garantir alta disponibilidade, observabilidade e resiliência.
