@@ -6,6 +6,7 @@ import br.com.infnet.payment.dto.PaymentRequest;
 import br.com.infnet.payment.dto.PaymentResponse;
 import br.com.infnet.payment.repository.PaymentRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 @Service
 public class PaymentService {
 
@@ -31,18 +33,17 @@ public class PaymentService {
     }
 
     public PaymentResponse create(PaymentRequest request) {
-        System.out.println("\n⏳ [PAYMENT] Ordem de pagamento recebida para o pedido: " + request.orderId());
+        log.info("[PAYMENT] Ordem de pagamento recebida para o pedido: " + request.orderId());
 
         // 1. Simulação de processamento bancário (Demora entre 3 e 8 segundos)
         try {
             long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8000);
-            System.out.println("⏳ [PAYMENT] Processando no gateway bancário... (Estimativa: " + (tempoAleatorio / 1000) + "s)");
+            log.info("[PAYMENT] Processando no gateway bancário... (Estimativa: " + (tempoAleatorio / 1000) + "s)");
             Thread.sleep(tempoAleatorio);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        // 2. Construção e persistência da entidade
         Payment payment = new Payment();
         payment.setOrderId(request.orderId());
         payment.setAmount(request.amount());
@@ -54,16 +55,15 @@ public class PaymentService {
         Payment savedPayment = paymentRepository.save(payment);
         PaymentResponse response = toResponse(savedPayment);
 
-        // 3. Serialização e publicação do Evento de Domínio
         try {
             String jsonMessage = objectMapper.writeValueAsString(response);
 
             // Envio com Chave (Order ID) e Valor (JSON) no tópico em português
             kafkaTemplate.send("pagamentos.aprovados", savedPayment.getOrderId().toString(), jsonMessage);
-            System.out.println("✅ [KAFKA] Evento de domínio publicado com sucesso: " + jsonMessage);
+            log.info("[KAFKA] Evento de domínio publicado com sucesso: " + jsonMessage);
 
         } catch (JsonProcessingException e) {
-            System.err.println("🚨 [ERRO CRÍTICO] Falha ao converter a resposta para JSON: " + e.getMessage());
+            log.error("Falha ao converter a resposta para JSON: " + e.getMessage());
             throw new RuntimeException("Erro ao serializar evento Kafka", e);
         }
 
@@ -71,12 +71,14 @@ public class PaymentService {
     }
 
     public PaymentResponse getById(UUID id) {
+        log.info("Listando pagamento {}",id);
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pagamento não encontrado para o ID: " + id));
         return toResponse(payment);
     }
 
     public List<PaymentResponse> getAll() {
+        log.info("Listando todos os pagamentos");
         return paymentRepository.findAll().stream().map(this::toResponse).toList();
     }
 
