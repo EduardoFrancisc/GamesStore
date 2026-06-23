@@ -1,11 +1,18 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-
     <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="unknown-service"/>
 
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %5p [${APP_NAME},%X{traceId:-},%X{spanId:-}] [%thread] %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>logstash:5000</destination>
+        <destination>localhost:5000</destination>
+        <!--<destination>logstash:5000</destination>-->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"service":"${APP_NAME}"}</customFields>
         </encoder>

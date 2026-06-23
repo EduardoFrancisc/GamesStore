@@ -75,7 +75,7 @@ public class OrderService {
         o.setTotalAmount(total);
         Order savedOrder = orderRepository.save(o);
 
-        log.info("Peido {} salvo com sucesso.", savedOrder.getId());
+        log.info("Pedido {} salvo com sucesso.", savedOrder.getId());
         log.info("Tentando pagamento para pedido {}.", savedOrder.getId());
 
         try {

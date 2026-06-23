@@ -25,7 +25,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/ #http://eureka:8761/eureka/
     register-with-eureka: false
     fetch-registry: true
   instance:
@@ -36,3 +36,19 @@ management:
   tracing:
     sampling:
       probability: 1.0
+    propagation:
+      type: w3c
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  opentelemetry:
+    resource-attributes:
+      service.name: ${spring.application.name}
+      service.namespace: gamesstore
+      deployment.environment: local
+    tracing:
+      export:
+        otlp:
+          endpoints: http://localhost:4318/v1/traces
+          protocol: http/protobuf

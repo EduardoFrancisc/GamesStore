@@ -2,9 +2,13 @@ spring:
   application:
     name: payment-service
   kafka:
-    bootstrap-servers: kafka:29092
+    bootstrap-servers: localhost:9092 #kafka:29092
+    template:
+      observation-enabled: true
+    listener:
+      observation-enabled: true
   datasource:
-    url: jdbc:postgresql://postgres-payment:5432/paymentdb
+    url: jdbc:postgresql://localhost:5432/paymentdb #jdbc:postgresql://postgres-payment:5432/paymentdb
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -27,12 +31,28 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://eureka:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/ #http://eureka:8761/eureka/
 
 management:
   tracing:
     sampling:
       probability: 1.0
+    propagation:
+      type: w3c
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  opentelemetry:
+    resource-attributes:
+      service.name: ${spring.application.name}
+      service.namespace: gamesstore
+      deployment.environment: local
+    tracing:
+      export:
+        otlp:
+          endpoints: http://localhost:4318/v1/traces
+          protocol: http/protobuf
   endpoints:
     web:
       exposure:

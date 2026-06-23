@@ -25,7 +25,7 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse create(@Valid @RequestBody CreateOrderRequest request){
-        log.info("Novo pedido feito por {}", request.getCustomerName());
+        log.info("Novo pedido de {} recebido no {}", request.getCustomerName(), request.getPaymentMethod());
         return  orderService.create(request);
     }
 

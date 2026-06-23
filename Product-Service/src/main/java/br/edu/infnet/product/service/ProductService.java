@@ -8,11 +8,13 @@ import br.edu.infnet.product.exception.StockQuantityException;
 import br.edu.infnet.product.integration.order.OrderItemDTO;
 import br.edu.infnet.product.metrics.ProductMetrics;
 import br.edu.infnet.product.repository.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+@Slf4j
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
@@ -39,11 +41,13 @@ public class ProductService {
     }
 
     public void reduceProductQuantityStockBatch(List<OrderItemDTO> items) {
+        log.info("Iniciando redução de etoque para {} produtos", items.size());
         for (OrderItemDTO item : items) {
             Product product = productRepository.findById(item.productId())
                     .orElseThrow(() -> new ProductNotFoundException("Product not found: " + item.productId()));
 
             if (product.getStockQuantity() < item.quantity()) {
+                log.error("Sem produto(s) suficientes: " + item.productId() + " " + item.quantity());
                 throw new StockQuantityException("Estoque insuficiente para o produto: " + product.getTitle());
             }
         }
@@ -54,15 +58,18 @@ public class ProductService {
             productRepository.save(product);
             productMetrics.incrementarProdutosDecrescidos();
         }
+        log.info("Quantidade de produto(s) reduzidas: ");
     }
 
     public ProductResponse findById(String id) {
+        log.info("Procurando por produto de id: {}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found: " + id));
         return toResponse(product);
     }
 
     public List<ProductResponse> findAll() {
+        log.info("Listando todos os produtos");
         return StreamSupport.stream(productRepository.findAll().spliterator(), false)
                 .map(this::toResponse)
                 .toList();

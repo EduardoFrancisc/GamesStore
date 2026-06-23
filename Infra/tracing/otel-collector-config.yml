@@ -1,0 +1,25 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+
+exporters:
+  debug:
+    verbosity: detailed
+  elasticsearch:
+    endpoints: ["http://localhost:9201"] #["http://elasticsearch-logs:9200"]
+    traces_index: "gamesstore-traces"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      # Trocamos o otlp/tempo pelo elasticsearch aqui
+      exporters: [debug, elasticsearch]

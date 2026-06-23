@@ -33,15 +33,16 @@ public class PaymentService {
     }
 
     public PaymentResponse create(PaymentRequest request) {
-        log.info("[PAYMENT] Ordem de pagamento recebida para o pedido: " + request.orderId());
+        log.info("Ordem de pagamento recebida para o pedido: {}", request.orderId());
 
         // 1. Simulação de processamento bancário (Demora entre 3 e 8 segundos)
         try {
             long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8000);
-            log.info("[PAYMENT] Processando no gateway bancário... (Estimativa: " + (tempoAleatorio / 1000) + "s)");
+            log.info("Processando no gateway bancário... (Estimativa: " + (tempoAleatorio / 1000) + "s)");
             Thread.sleep(tempoAleatorio);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            log.error(e.getMessage());
         }
 
         Payment payment = new Payment();
@@ -54,16 +55,17 @@ public class PaymentService {
 
         Payment savedPayment = paymentRepository.save(payment);
         PaymentResponse response = toResponse(savedPayment);
+        log.info("Pagamento realizado com sucesso: {}", response.orderId());
 
         try {
             String jsonMessage = objectMapper.writeValueAsString(response);
 
             // Envio com Chave (Order ID) e Valor (JSON) no tópico em português
             kafkaTemplate.send("pagamentos.aprovados", savedPayment.getOrderId().toString(), jsonMessage);
-            log.info("[KAFKA] Evento de domínio publicado com sucesso: " + jsonMessage);
+            log.info("[KAFKA] Evento publicado com sucesso para o pedido: {}", response.orderId());
 
         } catch (JsonProcessingException e) {
-            log.error("Falha ao converter a resposta para JSON: " + e.getMessage());
+            log.error(e.getMessage());
             throw new RuntimeException("Erro ao serializar evento Kafka", e);
         }
 
