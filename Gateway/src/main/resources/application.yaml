@@ -25,7 +25,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/ #http://eureka:8761/eureka/
+      defaultZone: http://eureka:8761/eureka/
     register-with-eureka: false
     fetch-registry: true
   instance:
@@ -50,5 +50,5 @@ management:
     tracing:
       export:
         otlp:
-          endpoints: http://localhost:4318/v1/traces
+          endpoints: http://otel-collector:4318/v1/traces
           protocol: http/protobuf

@@ -29,7 +29,7 @@ public class ProductService {
 
     public ProductResponse create(CreateProductRequest request) {
         Product product = new Product();
-        product.setTitle(request.title()); // Mapeando 'name' do DTO para 'title' da Entity
+        product.setTitle(request.title());
         product.setDescription(request.description());
         product.setPrice(request.price());
         product.setPlatform(request.platform());
