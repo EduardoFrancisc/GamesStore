@@ -78,6 +78,58 @@ Agora que o catálogo de produtos está populado e a base de logs está ativa, v
 docker-compose up -d --build
 
 ```
+## 📊 Como configurar a Observabilidade e Dashboards
+
+A nossa stack de monitoramento utiliza o Grafana como centralizador de visualização. Siga os passos abaixo para plugar os bancos de dados (Elasticsearch e Prometheus) na interface.
+
+### 1. Acessando o Grafana
+- **URL:** [http://localhost:3000](http://localhost:3000)
+- **Login / Senha (padrão):** `admin` / `admin`
+
+### 2. Configurando o Elasticsearch (Logs e Traces)
+O Elasticsearch armazena tanto os nossos logs (via Logstash) quanto a árvore de traces (via Otel-Collector). Precisamos criar duas conexões separadas.
+
+No Grafana, vá no menu lateral: **Connections** > **Add new connection** > Busque por **Elasticsearch** e adicione duas fontes de dados:
+
+#### 🔹 Fonte de Dados 1: Logs do Sistema
+- **Name:** `Elasticsearch Logs`
+- **URL:** `http://elasticsearch-logs:9200`
+- **Index name:** `gamesstore-logs-*`
+- **Pattern:** `No pattern` *(⚠️ Crucial para evitar erros de leitura)*
+- **Time field name:** `@timestamp`
+- **Version:** `8.x+`
+- **Default query mode:** `Logs`
+> Clique em **Save & test**. Um aviso verde confirmará o sucesso.
+
+#### 🔹 Fonte de Dados 2: Traces (Otel Collector)
+Volte em Add new connection e crie a segunda fonte:
+- **Name:** `Elasticsearch Traces`
+- **URL:** `http://elasticsearch-logs:9200`
+- **Index name:** `gamesstore-traces`
+- **Pattern:** `No pattern`
+- **Time field name:** `@timestamp`
+- **Version:** `8.x+`
+> Clique em **Save & test**. *(Obs: Os traces e spans ids só aparecerão no índice após você fazer a primeira requisição na aplicação).*
+
+### 3. Configurando o Prometheus (Métricas)
+Para acompanhar a saúde da aplicação (memória, CPU, requisições por segundo):
+1. Vá novamente em **Connections** > **Add new connection** > Busque por **Prometheus**.
+2. **URL:** `http://prometheus:9090`
+3. Clique em **Save & test**.
+
+### 4. Importando o Dashboard Central
+Com as fontes de dados plugadas, você já pode importar a nossa visualização pronta:
+1. No menu lateral, vá em **Dashboards** > **New** > **Import**.
+2. Clique em **Upload JSON file** e selecione o arquivo `grafana-dashboard.json` localizado na raiz deste projeto.
+3. O Grafana pedirá para você vincular as variáveis de fonte de dados. Selecione as conexões que você acabou de criar nos passos anteriores.
+4. Clique em **Import**.
+
+Pronto! Agora você tem uma visão completa cruzando Logs e Traces (Distributed Tracing) na mesma tela!
+
+
+
+
+
 ## Endpoints
 
 Como a arquitetura utiliza um **API Gateway**, o utilizador final (ou aplicação Front-end) não precisa de saber em que portas os microsserviços estão a rodar internamente. **Todas as requisições devem ser enviadas para a porta `9999` (Gateway)**, que se encarrega de rotear para o serviço correto.
@@ -88,67 +140,76 @@ Abaixo estão os principais endpoints disponíveis para interagir com o ecossist
 Responsável por gerir a vitrine da loja e as quantidades em stock no Elasticsearch.
 
 * **Listar todos os produtos:**
-    * **Método:** `GET`
-    * **URL:** `http://localhost:9999/products`
+  * **Método:** `GET`
+  * **URL:** `http://localhost:9999/products`
 
 * **Buscar um produto específico por ID:**
-    * **Método:** `GET`
-    * **URL:** `http://localhost:9999/products/{id}`
+  * **Método:** `GET`
+  * **URL:** `http://localhost:9999/products/{id}`
 
 * **Cadastrar um novo produto (Alimentar o Stock):**
-    * **Método:** `POST`
-    * **URL:** `http://localhost:9999/products`
-    * **Payload (JSON):**
-      ```json
-      {
-        "title": "Elden Ring",
-        "description": "Jogo de RPG de Ação, vencedor do GOTY.",
-        "price": 250.00,
-        "stockQuantity": 50,
-        "platform": "PC",
-        "releaseDate": "2022-02-25T00:00:00"
-      }
-      ```
+  * **Método:** `POST`
+  * **URL:** `http://localhost:9999/products`
+  * **Payload (JSON):**
+    ```json
+    {
+      "title": "Elden Ring",
+      "description": "Jogo de RPG de Ação, vencedor do GOTY.",
+      "price": 250.00,
+      "stockQuantity": 50,
+      "platform": "PC",
+      "releaseDate": "2022-02-25T00:00:00"
+    }
+    ```
 
 ### Pedidos (`Order-Service`)
 Responsável por orquestrar o carrinho, validar o stock e iniciar o pagamento via Kafka.
 
 * **Listar todos os pedidos gerados:**
-    * **Método:** `GET`
-    * **URL:** `http://localhost:9999/orders`
+  * **Método:** `GET`
+  * **URL:** `http://localhost:9999/orders`
 
 * **Acompanhar o status de um pedido:**
-    * *Útil para verificar se o pagamento assíncrono via Kafka aprovou ou recusou a compra.*
-    * **Método:** `GET`
-    * **URL:** `http://localhost:9999/orders/{id}`
+  * *Útil para verificar se o pagamento assíncrono via Kafka aprovou ou recusou a compra.*
+  * **Método:** `GET`
+  * **URL:** `http://localhost:9999/orders/{id}`
 
 * **Realizar uma compra (Criar Pedido):**
-    * *Nota: Substitua o `productId` com o ID real gerado pelo Elasticsearch ao criar um produto no passo anterior.*
-    * **Método:** `POST`
-    * **URL:** `http://localhost:9999/orders`
-    * **Payload (JSON):**
-      ```json
-      {
-        "customerName": "João da Silva",
-        "paymentMethod": "CREDIT_CARD",
-        "items": [
-          {
-            "productId": "INSERIR-ID-DO-PRODUTO-AQUI",
-            "quantity": 1
-          },
-          {
-            "productId": "INSERIR-OUTRO-ID-AQUI",
-            "quantity": 2
-          }
-        ]
-      }
-      ```
+  * *Nota: Substitua o `productId` com o ID real gerado pelo Elasticsearch ao criar um produto no passo anterior.*
+  * **Método:** `POST`
+  * **URL:** `http://localhost:9999/orders`
+  * **Payload (JSON):**
+    ```json
+    {
+      "customerName": "João da Silva",
+      "paymentMethod": "CREDIT_CARD",
+      "items": [
+        {
+          "productId": "INSERIR-ID-DO-PRODUTO-AQUI",
+          "quantity": 1
+        },
+        {
+          "productId": "INSERIR-OUTRO-ID-AQUI",
+          "quantity": 2
+        }
+      ]
+    }
+    ```
 
 ### Pagamentos (`Payment-Service`)
 Embora os pagamentos sejam processados de forma 100% assíncrona (escutando o Kafka) quando um pedido é criado, pode consultar o histórico financeiro:
 
 * **Listar todas as transações de pagamento:**
-    * **Método:** `GET`
-    * **URL:** `http://localhost:9999/payments`
+  * **Método:** `GET`
+  * **URL:** `http://localhost:9999/payments`
+
+## Observabilidade
+Demonstração de traceId e spanId
+<img width="1919" height="853" alt="image" src="https://github.com/user-attachments/assets/ff45c1a6-093c-46ce-b801-e2bea5089f52" />
+<img width="1919" height="749" alt="image" src="https://github.com/user-attachments/assets/721507c5-20e7-44ff-9724-2e5d05413f70" />
+<img width="1918" height="766" alt="image" src="https://github.com/user-attachments/assets/f08f8cb8-c435-400f-bb15-112618c6a910" />
+
+
+
 
 
