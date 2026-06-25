@@ -1,215 +1,132 @@
 # Games Store Microservices (Assessment)
 
-Este projeto é um sistema distribuído de e-commerce voltado para a venda de jogos eletrônicos, desenvolvido para garantir alta disponibilidade, observabilidade e resiliência.
+Este projeto é um sistema distribuído de e-commerce voltado para a venda de jogos eletrônicos, desenvolvido com Spring Boot para garantir alta disponibilidade, observabilidade e resiliência, seguindo os princípios de Domain-Driven Design (DDD).
 
-Através de uma arquitetura de microsserviços guiada pelos princípios do Domain-Driven Design (DDD), o sistema isola as responsabilidades de catálogo (produtos), pagamentos e fechamento de pedidos. A principal evolução do sistema é a adoção de uma **Arquitetura Orientada a Eventos (EDA)** com o padrão Saga Coreografada. Se houver falhas ou lentidão no processamento, o fluxo de compras é protegido de forma assíncrona, não bloqueando o cliente e garantindo a eventual consistência dos dados de pagamento e estoque.
+## Problema a ser resolvido
+O sistema visa resolver a complexidade de gerenciar catálogo, estoque, compras e pagamentos de uma loja de jogos em um ambiente de alto tráfego. A adoção de uma Arquitetura Orientada a Eventos (EDA) com o padrão Saga Coreografada protege o fluxo de compras de falhas ou lentidão, não bloqueando o cliente e garantindo a consistência eventual dos dados entre estoque e pagamento.
 
-# Integrantes
+## Usuários do sistema
+- **Clientes finais (Gamers):** Que acessam a vitrine para buscar e comprar jogos.
+- **Administradores da Loja:** Que cadastram novos produtos e acompanham as vendas e métricas operacionais da plataforma.
 
-* Eduardo Francisco
+## Principais funcionalidades
+- **Catálogo de Produtos:** Gerenciamento da vitrine de jogos e controle de estoque com buscas rápidas no Elasticsearch.
+- **Orquestração de Pedidos:** Carrinho de compras integrado com validação de estoque e processamento financeiro.
+- **Processamento de Pagamentos:** Executado de forma isolada e assíncrona, atualizando o status do pedido via mensageria.
+- **Monitoramento em Tempo Real:** Acompanhamento completo da saúde do sistema, rastreamento de requisições distribuídas e centralização de logs.
 
-## Arquitetura
+## Microsserviços
+O ecossistema é dividido nos seguintes serviços baseados em domínio:
+| Serviço / Componente | Responsabilidade | Porta Pública | Banco de Dados / Infra |
+| --- | --- | --- | --- |
+| **API Gateway** | Roteamento centralizado, balanceamento de carga e ponto único de acesso. | `9999` | N/A |
+| **Product-Service** | Gerenciamento do catálogo de jogos e estoque. | Dinâmica | Elasticsearch (Catálogo) |
+| **Payment-Service** | Processamento de pagamentos de forma assíncrona. | Dinâmica | PostgreSQL |
+| **Order-Service** | Orquestração do checkout. Chama serviços via RestClient e emite/consome eventos no Kafka. | Dinâmica | PostgreSQL |
 
-* **Microservices Baseados em Domínio:** Serviços independentes para Pedidos, Produtos e Pagamentos, cada um com as suas próprias regras de negócio e persistência de dados.
-* **Mensageria Assíncrona (Kafka):** O sistema utiliza o Kafka para a comunicação assíncrona entre o `Order-Service` e o `Payment-Service`, orquestrando a transação sem acoplamento temporal.
-* **Comunicação Síncrona Resiliente (RestClient):** Utilização do `RestClient` moderno do Spring com configuração estrita de *Timeouts* e controle de fluxo via exceções (mecanismo de Fallback) para consultas imediatas entre os serviços, evitando falhas em cascata.
-* **Service Discovery (Netflix Eureka):** Atua como a "lista telefônica" do sistema. Os microsserviços registram-se no Eureka e encontram-se dinamicamente (ex: `http://PRODUCT-SERVICE`).
-* **API Gateway:** O ponto único de entrada para clientes externos. Ele recebe as requisições na porta `9999` e faz o roteamento dinâmico para os microsserviços apropriados.
-* **Observabilidade Completa:** Monitoramento de métricas customizadas de negócio e saúde com **Prometheus e Grafana**, além de centralização de logs estruturados utilizando **Logstash e Elasticsearch**.
-* **Bancos de Dados Descentralizados:** O catálogo utiliza o **Elasticsearch** original para buscas rápidas (Full-Text Search) de produtos, enquanto as transações e pedidos ficam em bancos **PostgreSQL** relacionais isolados.
+## Discovery server
+- **Netflix Eureka (`eureka-server`):** Atua como a "lista telefônica" do sistema. Os microsserviços registram-se dinamicamente nele na porta `8761` e encontram uns aos outros pelos nomes (ex: `http://PRODUCT-SERVICE`), permitindo o balanceamento de carga interno e alta disponibilidade sem conhecer os IPs reais.
+
+## Comunicação Síncrona e Assíncrona
+- **Síncrona (RestClient):** Utilizada no momento do checkout, onde o `Order-Service` comunica-se imediatamente com o `Product-Service` para verificar disponibilidade de estoque e com o `Payment-Service` para criar a intenção de pagamento.
+- **Assíncrona (Kafka):** Utilizada para confirmar transações sem acoplamento temporal. O `Payment-Service` processa o pagamento no seu tempo e publica um evento no tópico `pagamentos.aprovados`. O `Order-Service` escuta este tópico para atualizar o status do pedido de pendente para finalizado/rejeitado.
+
+## Desenho do Sistema
+<img width="803" height="431" alt="GamesstoreDiagram drawio" src="https://github.com/user-attachments/assets/84f45a93-dbff-4756-9ab5-55e65fd0ece2" />
+
+## Resiliência e Tolerância a Falhas
+A arquitetura foi desenhada para suportar instabilidades em serviços dependentes sem comprometer a experiência do usuário:
+- **Timeouts Estratégicos:** Utilização estrita de *Timeouts* nas comunicações síncronas (`RestClient`). Isso evita que a lentidão de um microsserviço cause o esgotamento de conexões (falha em cascata) no serviço que o invocou.
+- **Fallbacks e Graceful Degradation:** Tratamento avançado de exceções HTTP via interceptadores e `.onStatus`. Quando o serviço de catálogo falha ou demora, respostas amigáveis são retornadas. Se o pagamento sofre timeout síncrono, a compra não é abortada bruscamente, mas transita para um estado seguro (como "Retido como Pendente").
+- **Isolamento de Falhas (Kafka):** Graças à arquitetura orientada a eventos (Saga Coreografada), se o serviço de Pagamentos cair, a vitrine e o fechamento de pedidos continuam 100% operacionais. As mensagens acumulam no Kafka de forma segura e são processadas automaticamente (Eventual Consistency) assim que o serviço voltar ao ar, garantindo que nenhum dado seja perdido.
 
 ## Observabilidade
-
-O ecossistema adota duas bases de dados de naturezas distintas para garantir a observabilidade completa:
-* **Métricas e Alertas (Actuator + Prometheus):** O **Prometheus** atua como um *Time-Series Database* (TSDB). Ele armazena exclusivamente séries temporais numéricas (uso de CPU, consumo de memória, tempo de requisição) do *Actuator*. Estes dados alimentam os dashboards do **Grafana** para acompanhamento da saúde e performance (ex: responder "o sistema está sobrecarregado?"), além de coletar as métricas personalizadas de negócio desenvolvidas no projeto, como a quantidade de pedidos criados, tempo médio de processamento e o volume de pagamentos aprovados ou cancelados.
-* **Centralização de Logs (Logstash + Elasticsearch):** Um **segundo cluster Elasticsearch** dedicado à infraestrutura atua como um motor de busca de documentos. Ele armazena e indexa os logs complexos ejetados pelas aplicações e trafegados via Logstash. Serve para investigar incidentes em profundidade (ex: responder "qual foi a linha de código que falhou e gerou este erro?").
-* **Visualização Unificada (Grafana):** Atua como a camada de visualização central da arquitetura. Ele é responsável por montar dashboards personalizados consumindo dados tanto do Prometheus (para gráficos de performance e métricas de negócio) quanto do Elasticsearch dedicado à infraestrutura (para análise de logs), unificando toda a saúde do ecossistema em um único painel operacional.
+A stack adota bases de dados de naturezas distintas para garantir monitoramento total da arquitetura distribuída:
+- **Centralização de Logs (Logstash + Elasticsearch):** Logs complexos das aplicações são capturados pelo LogstashEncoder e armazenados num cluster Elasticsearch dedicado (`gamesstore-logs-*`).
+- **Distributed Tracing (OpenTelemetry + Micrometer):** Um único `traceId` acompanha a requisição por toda a arquitetura (passando pelo Gateway, RestClient e Kafka). O `Otel-Collector` recebe os traces via protocolo OTLP e os exporta para o Elasticsearch (`gamesstore-traces`).
+- **Métricas e Alertas (Prometheus):** Coleta de métricas de saúde, memória, CPU e métricas de negócio do Actuator.
+- **Visualização Unificada (Grafana):** Painel central na porta `3000` que cruza dados do Prometheus (métricas) e do Elasticsearch (logs e traces em cascata).
 
 <img width="1544" height="785" alt="image" src="https://github.com/user-attachments/assets/315224c5-3af1-48d5-b206-ca20af997b55" />
 <img width="1542" height="826" alt="image" src="https://github.com/user-attachments/assets/f6a77265-a924-4ece-a8c2-42f2ae770fbe" />
 
-## Microservices e Infraestrutura
-
-| Serviço / Componente | Responsabilidade | Porta Pública | Banco de Dados / Infra |
-| --- | --- | --- | --- |
-| **Eureka Server** | Registro e descoberta de serviços (Service Discovery). | `8761` | N/A |
-| **API Gateway** | Roteamento centralizado, balanceamento de carga e ponto único de acesso. | `9999` | N/A |
-| **Product-Service** | Gerenciamento do catálogo de jogos e estoque. | Dinâmica | Elasticsearch (Catálogo) |
-| **Payment-Service** | Processamento de pagamentos de forma assíncrona via Kafka. | Dinâmica | PostgreSQL |
-| **Order-Service** | Orquestração do checkout. Chama serviços via RestClient e emite eventos no Kafka. | Dinâmica | PostgreSQL |
-| **Kafka-UI** | Interface visual para monitoramento dos tópicos e mensagens no Kafka. | `9091` | N/A |
-| **Grafana** | Dashboard unificado de visualização de métricas. | `3000` | Consome Prometheus e Elasticsearch (Logs) |
-
-Aqui está a atualização do seu tópico **"Como executar"** estruturada exatamente com a estratégia de orquestração por etapas que pediu, garantindo que o build do Docker encontre os binários e que os bancos pesados fiquem prontos antes do restante do ecossistema:
-
-
-## Como executar
-
-O projeto foi inteiramente conteinerizado para simplificar a implantação. Siga o passo a passo abaixo para garantir que o ecossistema suba de forma segura e sem erros de timeout:
-
-**Pré-requisitos:** Ter o Docker e o Docker Compose instalados na máquina.
-
-### 1. Preparação dos Binários (.jar)
-Antes de iniciar os containers, certifique-se de compilar os microsserviços (via IDE ou utilizando o comando `./mvnw clean package -DskipTests` em cada pasta de serviço). **Os arquivos `.jar` gerados devem estar obrigatoriamente posicionados dentro das suas devidas pastas de contexto** (no diretório `docker/` de cada microsserviço, onde os arquivos `Dockerfile` correspondentes estão configurados para buscá-los para construir as imagens).
-
-### 2. Fluxo Sequencial de Instalação
-
-**Passo 1: Subir os serviços de Elasticsearch primeiro**
-Como as duas instâncias do Elasticsearch (`elasticsearch-logs` e `product-elasticsearch`) demoram mais tempo para subir e inicializar completamente os seus motores de busca, inicie apenas os dois de forma isolada:
-```bash
-docker-compose up -d elasticsearch-logs product-elasticsearch
-
-```
-
-*Aguarde cerca de 30 a 45 segundos para que fiquem totalmente prontos para aceitar conexões.*
-
-**Passo 2: Alimentar o Elasticsearch de Produtos (Catálogo)**
-Com o banco de dados de produtos de pé, execute o container de seed para popular o catálogo de jogos eletrônicos inicial na base:
-
-```bash
-docker-compose run --rm product-elasticsearch-seeder
-
-```
-
-**Passo 3: Subir o resto do ecossistema junto**
-Agora que o catálogo de produtos está populado e a base de logs está ativa, você pode iniciar o restante das coisas juntas (bancos PostgreSQL, Kafka, Eureka, API Gateway, microsserviços e ferramentas de monitoramento) de uma só vez:
-
-```bash
-docker-compose up -d --build
-
-```
-## 📊 Como configurar a Observabilidade e Dashboards
-
-A nossa stack de monitoramento utiliza o Grafana como centralizador de visualização. Siga os passos abaixo para plugar os bancos de dados (Elasticsearch e Prometheus) na interface.
-
-### 1. Acessando o Grafana
-- **URL:** [http://localhost:3000](http://localhost:3000)
-- **Login / Senha (padrão):** `admin` / `admin`
-
-### 2. Configurando o Elasticsearch (Logs e Traces)
-O Elasticsearch armazena tanto os nossos logs (via Logstash) quanto a árvore de traces (via Otel-Collector). Precisamos criar duas conexões separadas.
-
-No Grafana, vá no menu lateral: **Connections** > **Add new connection** > Busque por **Elasticsearch** e adicione duas fontes de dados:
-
-#### 🔹 Fonte de Dados 1: Logs do Sistema
-- **Name:** `Elasticsearch Logs`
-- **URL:** `http://elasticsearch-logs:9200`
-- **Index name:** `gamesstore-logs-*`
-- **Pattern:** `No pattern` *(⚠️ Crucial para evitar erros de leitura)*
-- **Time field name:** `@timestamp`
-- **Version:** `8.x+`
-- **Default query mode:** `Logs`
-> Clique em **Save & test**. Um aviso verde confirmará o sucesso.
-
-#### 🔹 Fonte de Dados 2: Traces (Otel Collector)
-Volte em Add new connection e crie a segunda fonte:
-- **Name:** `Elasticsearch Traces`
-- **URL:** `http://elasticsearch-logs:9200`
-- **Index name:** `gamesstore-traces`
-- **Pattern:** `No pattern`
-- **Time field name:** `@timestamp`
-- **Version:** `8.x+`
-> Clique em **Save & test**. *(Obs: Os traces e spans ids só aparecerão no índice após você fazer a primeira requisição na aplicação).*
-
-### 3. Configurando o Prometheus (Métricas)
-Para acompanhar a saúde da aplicação (memória, CPU, requisições por segundo):
-1. Vá novamente em **Connections** > **Add new connection** > Busque por **Prometheus**.
-2. **URL:** `http://prometheus:9090`
-3. Clique em **Save & test**.
-
-### 4. Importando o Dashboard Central
-Com as fontes de dados plugadas, você já pode importar a nossa visualização pronta:
-1. No menu lateral, vá em **Dashboards** > **New** > **Import**.
-2. Clique em **Upload JSON file** e selecione o arquivo `grafana-dashboard.json` localizado na raiz deste projeto.
-3. O Grafana pedirá para você vincular as variáveis de fonte de dados. Selecione as conexões que você acabou de criar nos passos anteriores.
-4. Clique em **Import**.
-
-Pronto! Agora você tem uma visão completa cruzando Logs e Traces (Distributed Tracing) na mesma tela!
-
-
-
-
-
-## Endpoints
-
-Como a arquitetura utiliza um **API Gateway**, o utilizador final (ou aplicação Front-end) não precisa de saber em que portas os microsserviços estão a rodar internamente. **Todas as requisições devem ser enviadas para a porta `9999` (Gateway)**, que se encarrega de rotear para o serviço correto.
-
-Abaixo estão os principais endpoints disponíveis para interagir com o ecossistema:
-
-### Catálogo de Produtos (`Product-Service`)
-Responsável por gerir a vitrine da loja e as quantidades em stock no Elasticsearch.
-
-* **Listar todos os produtos:**
-  * **Método:** `GET`
-  * **URL:** `http://localhost:9999/products`
-
-* **Buscar um produto específico por ID:**
-  * **Método:** `GET`
-  * **URL:** `http://localhost:9999/products/{id}`
-
-* **Cadastrar um novo produto (Alimentar o Stock):**
-  * **Método:** `POST`
-  * **URL:** `http://localhost:9999/products`
-  * **Payload (JSON):**
-    ```json
-    {
-      "title": "Elden Ring",
-      "description": "Jogo de RPG de Ação, vencedor do GOTY.",
-      "price": 250.00,
-      "stockQuantity": 50,
-      "platform": "PC",
-      "releaseDate": "2022-02-25T00:00:00"
-    }
-    ```
-
-### Pedidos (`Order-Service`)
-Responsável por orquestrar o carrinho, validar o stock e iniciar o pagamento via Kafka.
-
-* **Listar todos os pedidos gerados:**
-  * **Método:** `GET`
-  * **URL:** `http://localhost:9999/orders`
-
-* **Acompanhar o status de um pedido:**
-  * *Útil para verificar se o pagamento assíncrono via Kafka aprovou ou recusou a compra.*
-  * **Método:** `GET`
-  * **URL:** `http://localhost:9999/orders/{id}`
-
-* **Realizar uma compra (Criar Pedido):**
-  * *Nota: Substitua o `productId` com o ID real gerado pelo Elasticsearch ao criar um produto no passo anterior.*
-  * **Método:** `POST`
-  * **URL:** `http://localhost:9999/orders`
-  * **Payload (JSON):**
-    ```json
-    {
-      "customerName": "João da Silva",
-      "paymentMethod": "CREDIT_CARD",
-      "items": [
-        {
-          "productId": "INSERIR-ID-DO-PRODUTO-AQUI",
-          "quantity": 1
-        },
-        {
-          "productId": "INSERIR-OUTRO-ID-AQUI",
-          "quantity": 2
-        }
-      ]
-    }
-    ```
-
-### Pagamentos (`Payment-Service`)
-Embora os pagamentos sejam processados de forma 100% assíncrona (escutando o Kafka) quando um pedido é criado, pode consultar o histórico financeiro:
-
-* **Listar todas as transações de pagamento:**
-  * **Método:** `GET`
-  * **URL:** `http://localhost:9999/payments`
-
-## Observabilidade
-Demonstração de traceId e spanId
+*(Demonstração de traceId e spanId interligados)*
 <img width="1919" height="853" alt="image" src="https://github.com/user-attachments/assets/ff45c1a6-093c-46ce-b801-e2bea5089f52" />
 <img width="1919" height="749" alt="image" src="https://github.com/user-attachments/assets/721507c5-20e7-44ff-9724-2e5d05413f70" />
 <img width="1918" height="766" alt="image" src="https://github.com/user-attachments/assets/f08f8cb8-c435-400f-bb15-112618c6a910" />
 
+## Como rodar
 
+O projeto foi inteiramente conteinerizado para simplificar a implantação. Siga o passo a passo abaixo:
 
+**Pré-requisitos:** Ter o Docker e o Docker Compose instalados na sua máquina.
 
+1. **Preparação dos Binários (.jar)**
+Compile os microsserviços via IDE ou utilizando `./mvnw clean package -DskipTests` na pasta de cada serviço. Os arquivos `.jar` gerados devem estar posicionados obrigatoriamente nas respectivas pastas `docker/` das aplicações.
 
+2. **Passo 1: Subir os serviços de Elasticsearch primeiro**
+Como as instâncias do Elasticsearch (`elasticsearch-logs` e `product-elasticsearch`) demoram mais para subir, inicie-os isoladamente para não causar timeouts:
+```bash
+docker-compose up -d elasticsearch-logs product-elasticsearch
+```
+*Aguarde cerca de 30 a 45 segundos.*
+
+3. **Passo 2: Alimentar o Elasticsearch de Produtos (Catálogo)**
+Execute o container de seed para popular o catálogo de jogos inicial no banco de buscas:
+```bash
+docker-compose run --rm product-elasticsearch-seeder
+```
+
+4. **Passo 3: Subir o resto do ecossistema junto**
+Inicie os bancos PostgreSQL, Kafka, Eureka, API Gateway, microsserviços e ferramentas de monitoramento de uma vez:
+```bash
+docker-compose up -d --build
+```
+
+### Configurando os Dashboards no Grafana:
+1. Acesse `http://localhost:3000` (Login: `admin` / Senha: `admin`).
+2. No menu **Connections > Add new connection > Elasticsearch**:
+   * **Logs:** Adicione a URL `http://elasticsearch-logs:9200`, Index name `gamesstore-logs-*`, Pattern **No pattern**, Time field `@timestamp`, Query mode `Logs`. Salve.
+   * **Traces:** Adicione outra fonte Elasticsearch com a mesma URL, Index name `gamesstore-traces`, Pattern **No pattern**, Time field `@timestamp`. Salve.
+3. No menu **Connections > Add new connection > Prometheus**:
+   * **Métricas:** Adicione a URL `http://prometheus:9090`. Salve.
+4. Vá em **Dashboards > Import** e faça o upload do arquivo `grafana-dashboard.json` localizado na raiz do projeto. Selecione as fontes recém-criadas e finalize.
+
+## Endpoints
+
+Como a arquitetura utiliza um **API Gateway**, o cliente final não precisa saber em que portas os microsserviços estão rodando internamente. Todas as requisições externas devem ser enviadas exclusivamente para a porta **`9999` (Gateway)**, que se encarrega de rotear para o destino correto.
+
+### Catálogo de Produtos (`Product-Service`)
+* **Listar todos os produtos:** `GET http://localhost:9999/products`
+* **Buscar produto por ID:** `GET http://localhost:9999/products/{id}`
+* **Cadastrar novo produto:** `POST http://localhost:9999/products`
+  ```json
+  {
+    "title": "Elden Ring",
+    "description": "Jogo de RPG de Ação, vencedor do GOTY.",
+    "price": 250.00,
+    "stockQuantity": 50,
+    "platform": "PC",
+    "releaseDate": "2022-02-25T00:00:00"
+  }
+  ```
+
+### Pedidos (`Order-Service`)
+* **Listar todos os pedidos:** `GET http://localhost:9999/orders`
+* **Acompanhar status do pedido:** `GET http://localhost:9999/orders/{id}`
+* **Realizar uma compra (Criar Pedido):** `POST http://localhost:9999/orders`
+  ```json
+  {
+    "customerName": "João da Silva",
+    "paymentMethod": "CREDIT_CARD",
+    "items": [
+      {
+        "productId": "INSERIR-ID-DO-PRODUTO-AQUI",
+        "quantity": 1
+      }
+    ]
+  }
+  ```
+
+### Pagamentos (`Payment-Service`)
+* **Listar transações de pagamento históricas:** `GET http://localhost:9999/payments`
