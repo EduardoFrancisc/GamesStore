@@ -47,13 +47,12 @@ A stack adota bases de dados de naturezas distintas para garantir monitoramento 
 - **Métricas e Alertas (Prometheus):** Coleta de métricas de saúde, memória, CPU e métricas de negócio do Actuator.
 - **Visualização Unificada (Grafana):** Painel central na porta `3000` que cruza dados do Prometheus (métricas) e do Elasticsearch (logs e traces em cascata).
 
-<img width="1544" height="785" alt="image" src="https://github.com/user-attachments/assets/315224c5-3af1-48d5-b206-ca20af997b55" />
+<img width="1843" height="723" alt="image" src="https://github.com/user-attachments/assets/f78dec4f-7cb9-4cab-b7cd-cc319f8e10bb" />
 <img width="1542" height="826" alt="image" src="https://github.com/user-attachments/assets/f6a77265-a924-4ece-a8c2-42f2ae770fbe" />
 
 *(Demonstração de traceId e spanId interligados)*
-<img width="1919" height="853" alt="image" src="https://github.com/user-attachments/assets/ff45c1a6-093c-46ce-b801-e2bea5089f52" />
-<img width="1919" height="749" alt="image" src="https://github.com/user-attachments/assets/721507c5-20e7-44ff-9724-2e5d05413f70" />
-<img width="1918" height="766" alt="image" src="https://github.com/user-attachments/assets/f08f8cb8-c435-400f-bb15-112618c6a910" />
+<img width="1903" height="812" alt="image" src="https://github.com/user-attachments/assets/67d8eccf-e358-4329-9a23-95dca498b58c" />
+
 
 ## Como rodar
 
