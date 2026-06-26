@@ -4,24 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="Tracing">
+    <list default="true" id="5c7f1744-1063-4c1a-9d10-e9946d36fa22" name="Changes" comment="Dockerizando novamente">
       <change afterPath="$PROJECT_DIR$/Eureka/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Gateway/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Order-Service/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Payment-Service/docker/app.jar" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Product-Service/docker/app.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grafana-dashboard.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gateway/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gateway/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Gateway/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/config/KafkaConsumerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/config/KafkaConsumerConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/java/br/com/infnet/payment/config/KafkaConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/java/br/com/infnet/payment/config/KafkaConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/resources/logback-spring.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/kafka/PaymentEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/kafka/PaymentEventListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/service/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Order-Service/src/main/java/br/edu/infnet/order/service/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Payment-Service/src/main/java/br/com/infnet/payment/service/PaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Payment-Service/src/main/java/br/com/infnet/payment/service/PaymentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Product-Service/src/main/java/br/edu/infnet/product/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Product-Service/src/main/java/br/edu/infnet/product/service/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Product-Service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Product-Service/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Product-Service/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Product-Service/src/main/resources/logback-spring.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -227,7 +223,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782254664153</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Dockerizando novamente">
+      <option name="closed" value="true" />
+      <created>1782256344166</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1782256344166</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -246,6 +250,7 @@
     <MESSAGE value="dashboards e um dockerfile q tava faltando" />
     <MESSAGE value="Finalizando projeto" />
     <MESSAGE value="Tracing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tracing" />
+    <MESSAGE value="Dockerizando novamente" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dockerizando novamente" />
   </component>
 </project>

@@ -58,7 +58,7 @@ public class ProductService {
             productRepository.save(product);
             productMetrics.incrementarProdutosDecrescidos();
         }
-        log.info("Quantidade de produto(s) reduzidas: ");
+        log.info("Quantidade de produto(s) reduzidas: {}", items.size());
     }
 
     public ProductResponse findById(String id) {

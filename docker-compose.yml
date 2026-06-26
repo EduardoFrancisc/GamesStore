@@ -72,8 +72,8 @@ services:
       dockerfile: Dockerfile
     container_name: product-service
     depends_on:
-      - eureka
       - product-elasticsearch
+      - eureka
       - logstash
     networks:
       - gamesstore-network

@@ -37,8 +37,7 @@ public class PaymentService {
 
         // 1. Simulação de processamento bancário (Demora entre 3 e 8 segundos)
         try {
-            long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 8000);
-            log.info("Processando no gateway bancário... (Estimativa: " + (tempoAleatorio / 1000) + "s)");
+            long tempoAleatorio = ThreadLocalRandom.current().nextLong(3000, 5000);
             Thread.sleep(tempoAleatorio);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -49,7 +48,10 @@ public class PaymentService {
         payment.setOrderId(request.orderId());
         payment.setAmount(request.amount());
         payment.setPaymentMethod(request.paymentMethod());
-        payment.setStatus(PaymentStatus.APPROVED);
+        
+        int randomResult = ThreadLocalRandom.current().nextInt(2);
+        payment.setStatus(randomResult == 1 ? PaymentStatus.APPROVED : PaymentStatus.REJECTED);
+        
         payment.setCreatedAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 
@@ -59,8 +61,6 @@ public class PaymentService {
 
         try {
             String jsonMessage = objectMapper.writeValueAsString(response);
-
-            // Envio com Chave (Order ID) e Valor (JSON) no tópico em português
             kafkaTemplate.send("pagamentos.aprovados", savedPayment.getOrderId().toString(), jsonMessage);
             log.info("[KAFKA] Evento publicado com sucesso para o pedido: {}", response.orderId());
 

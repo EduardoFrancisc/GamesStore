@@ -91,14 +91,17 @@ public class OrderService {
                     savedOrder.setOrderStatus(OrderStatus.CONFIRMED);
                     log.info("Pedido {} APPROVED com sucesso.", savedOrder.getId());
                     orderMetrics.incrementarPagamentoAprovado();
+                    break;
                 case REJECTED:
                     savedOrder.setOrderStatus(OrderStatus.CANCELED);
                     log.info("Pedido {} foi rejeitado.", savedOrder.getId());
                     orderMetrics.incrementarPagamentoCancelado();
+                    break;
                 case PENDING:
                     savedOrder.setOrderStatus(OrderStatus.PENDING);
                     log.info("Pedido {} foi retido como pendente.", savedOrder.getId());
                     orderMetrics.incrementarPagamentoPendente();
+                    break;
             }
             return toResponse(orderRepository.save(savedOrder));
 
